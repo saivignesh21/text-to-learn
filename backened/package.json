@@ -1,0 +1,31 @@
+{
+  "name": "backened",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/text-to-speech": "^6.4.0",
+    "@google/genai": "^1.24.0",
+    "@google/generative-ai": "^0.24.1",
+    "ajv": "^8.17.1",
+    "axios": "^1.13.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-oauth2-jwt-bearer": "^1.7.1",
+    "html2pdf": "^0.0.11",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.19.0",
+    "openai": "^6.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

@@ -1,0 +1,37 @@
+:root {
+  --text-secondary: #cbd5e1;
+}
+
+.paragraph-block {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  margin: 1rem 0;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  max-width: 100%;
+}
+
+.paragraph-block br {
+  display: block;
+  content: "";
+  margin: 0.6rem 0;
+}
+
+@media (max-width: 768px) {
+  .paragraph-block {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 480px) {
+  .paragraph-block {
+    font-size: 0.85rem;
+    line-height: 1.65;
+  }
+}

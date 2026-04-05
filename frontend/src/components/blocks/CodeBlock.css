@@ -1,0 +1,484 @@
+/* src/components/blocks/CodeBlock.css - UPDATED WITH SYNTAX HIGHLIGHTING */
+
+:root {
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --bg-code: #1a1f2e;
+  --bg-hover: #334155;
+  --text-primary: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --primary: #06b6d4;
+  --primary-hover: #0891b2;
+  --success: #10b981;
+  --border: #334155;
+  --border-light: #475569;
+  
+  /* Syntax Colors (Claude-like) */
+  --syntax-string: #a6e22e;
+  --syntax-number: #ae81ff;
+  --syntax-keyword: #ff79c6;
+  --syntax-function: #8be9fd;
+  --syntax-class: #50fa7b;
+  --syntax-comment: #6272a4;
+  --syntax-operator: #ff79c6;
+  --syntax-punctuation: #f8f8f2;
+}
+
+/* Main Container */
+.code-block-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  margin: 2rem 0;
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Info Section - Heading & Explanation */
+.code-block-info {
+  padding: 1.5rem;
+  background: rgba(6, 182, 212, 0.05);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.code-block-heading {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.code-block-explanation {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Header */
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0%, rgba(6, 182, 212, 0.05) 100%);
+  border-bottom: 1px solid var(--border);
+  gap: 1rem;
+}
+
+.code-block-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.code-language-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 1.5px;
+  background: rgba(6, 182, 212, 0.1);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.code-lines {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+/* Actions */
+.code-block-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.code-copy-btn,
+.code-expand-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.code-copy-btn:hover,
+.code-expand-btn:hover {
+  background: rgba(6, 182, 212, 0.2);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.code-copy-btn:active,
+.code-expand-btn:active {
+  transform: translateY(0);
+}
+
+.code-copy-btn .icon,
+.code-expand-btn {
+  transition: transform 0.2s ease;
+}
+
+.code-copy-btn:hover .icon {
+  transform: scale(1.1);
+}
+
+.code-expand-btn {
+  padding: 0.6rem 0.8rem;
+}
+
+/* Code Wrapper and Pre */
+.code-block-wrapper {
+  position: relative;
+  max-height: 600px;
+  overflow: hidden;
+  background: var(--bg-code);
+}
+
+.code-block-pre {
+  padding: 1.5rem;
+  overflow-x: auto;
+  margin: 0;
+  background: var(--bg-code);
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Syntax Highlighting - Base */
+.code-block-code {
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Courier New", monospace;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  letter-spacing: 0.5px;
+}
+
+/* Prism.js Syntax Highlighting Colors */
+.code-block-code .token {
+  color: var(--text-primary);
+}
+
+/* Keywords - Pink */
+.code-block-code .token.keyword {
+  color: #ff79c6;
+  font-weight: 600;
+}
+
+/* Strings - Green */
+.code-block-code .token.string {
+  color: #a6e22e;
+}
+
+/* Numbers - Purple */
+.code-block-code .token.number {
+  color: #ae81ff;
+}
+
+/* Functions - Cyan */
+.code-block-code .token.function {
+  color: #8be9fd;
+  font-weight: 600;
+}
+
+/* Class Names - Green */
+.code-block-code .token.class-name {
+  color: #50fa7b;
+  font-weight: 600;
+}
+
+/* Comments - Gray */
+.code-block-code .token.comment {
+  color: #6272a4;
+  font-style: italic;
+}
+
+/* Punctuation */
+.code-block-code .token.punctuation {
+  color: #f8f8f2;
+}
+
+/* Operators - Pink */
+.code-block-code .token.operator {
+  color: #ff79c6;
+}
+
+/* Attributes - Cyan */
+.code-block-code .token.attr-name {
+  color: #8be9fd;
+}
+
+/* Properties - Cyan */
+.code-block-code .token.property {
+  color: #8be9fd;
+}
+
+/* Booleans - Purple */
+.code-block-code .token.boolean {
+  color: #ae81ff;
+  font-weight: 600;
+}
+
+/* Tags - Pink */
+.code-block-code .token.tag {
+  color: #ff79c6;
+  font-weight: 600;
+}
+
+/* Namespace - Cyan */
+.code-block-code .token.namespace {
+  color: #8be9fd;
+}
+
+/* Regex - Green */
+.code-block-code .token.regex {
+  color: #a6e22e;
+}
+
+/* Variable - Light Blue */
+.code-block-code .token.variable {
+  color: #8be9fd;
+}
+
+/* URL - Green */
+.code-block-code .token.url {
+  color: #a6e22e;
+}
+
+/* Builtin - Cyan */
+.code-block-code .token.builtin {
+  color: #8be9fd;
+}
+
+/* Important - Pink */
+.code-block-code .token.important {
+  color: #ff79c6;
+  font-weight: bold;
+}
+
+/* Deleted - Red */
+.code-block-code .token.deleted {
+  color: #ff5555;
+  text-decoration: line-through;
+}
+
+/* Inserted - Green */
+.code-block-code .token.inserted {
+  color: #50fa7b;
+}
+
+/* Empty State */
+.code-block-empty {
+  border-color: var(--border-light);
+}
+
+.code-block-empty-state {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.code-block-empty-state svg {
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.code-block-empty-state p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.code-block-empty-state small {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+/* Scrollbar Styling */
+.code-block-pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.code-block-pre::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.code-block-pre::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.code-block-pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.6);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .code-block-container {
+    margin: 1.5rem -1rem;
+    border-radius: 8px;
+  }
+
+  .code-block-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .code-block-actions {
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .code-copy-btn,
+  .code-expand-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .code-copy-btn span,
+  .code-expand-btn span {
+    display: none;
+  }
+
+  .code-block-info {
+    padding: 1rem;
+  }
+
+  .code-block-heading {
+    font-size: 1rem;
+  }
+
+  .code-block-explanation {
+    font-size: 0.9rem;
+  }
+
+  .code-block-pre {
+    padding: 1rem;
+    max-height: 400px;
+  }
+
+  .code-block-code {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .code-language-badge {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .code-lines {
+    font-size: 0.8rem;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .code-block-container {
+    background: var(--bg-card);
+    border-color: var(--border);
+  }
+
+  .code-block-code {
+    color: var(--text-primary);
+  }
+}
+
+/* Light Mode Support */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-dark: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-code: #fafbfc;
+    --text-primary: #0f172a;
+    --text-muted: #475569;
+    --border: #e2e8f0;
+    --border-light: #cbd5e1;
+    
+    /* Light mode syntax colors */
+    --syntax-string: #22863a;
+    --syntax-number: #005cc5;
+    --syntax-keyword: #d73a49;
+    --syntax-function: #005cc5;
+    --syntax-comment: #6a737d;
+  }
+
+  .code-block-info {
+    background: rgba(6, 182, 212, 0.08);
+  }
+
+  .code-block-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(6, 182, 212, 0.08) 100%);
+  }
+
+  .code-block-code .token.keyword {
+    color: #d73a49;
+  }
+
+  .code-block-code .token.string {
+    color: #22863a;
+  }
+
+  .code-block-code .token.number {
+    color: #005cc5;
+  }
+
+  .code-block-code .token.function {
+    color: #005cc5;
+  }
+
+  .code-block-code .token.class-name {
+    color: #6f42c1;
+  }
+
+  .code-block-code .token.comment {
+    color: #6a737d;
+  }
+
+  .code-block-code .token.attr-name {
+    color: #005cc5;
+  }
+
+  .code-block-code .token.operator {
+    color: #d73a49;
+  }
+}

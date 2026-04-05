@@ -1,0 +1,50 @@
+:root {
+  --primary: #06b6d4;
+  --primary-dark: #0891b2;
+  --secondary: #a855f7;
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: #334155;
+}
+
+.layout-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-card) 50%, var(--bg-dark) 100%);
+  background-attachment: fixed;
+}
+
+.layout-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+.layout-main {
+  display: flex;
+  flex: 1;
+  margin-top: 80px;
+  overflow: hidden;
+}
+
+.layout-sidebar {
+  flex-shrink: 0;
+}
+
+.layout-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .layout-main {
+    margin-top: 70px;
+  }
+}

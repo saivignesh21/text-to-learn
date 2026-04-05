@@ -1,0 +1,540 @@
+/* ==================== FILE 1: Navbar.css (Modern ChatGPT Style) ==================== */
+
+:root {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary-color: #8b5cf6;
+  --accent-color: #34d399;
+  --bg-dark: #111827;
+  --bg-dark-hover: #1f2937;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== NAVBAR MODERN CONTAINER ========== */
+.navbar-modern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.95) 0%, rgba(17, 24, 39, 0.85) 100%);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(55, 65, 81, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.navbar-modern-container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* ========== LOGO SECTION ========== */
+.navbar-modern-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.25rem;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-modern-logo:hover {
+  opacity: 0.8;
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 8px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  background: linear-gradient(90deg, #ffffff 0%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+@media (max-width: 768px) {
+  .logo-text {
+    display: none;
+  }
+}
+
+/* ========== RIGHT NAVIGATION ========== */
+.navbar-modern-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* User Greeting */
+.user-greeting-modern {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.user-greeting-modern strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ========== USER MENU ========== */
+.user-menu-wrapper {
+  position: relative;
+}
+
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.user-menu-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chevron-icon {
+  transition: transform 0.2s ease;
+}
+
+.user-menu-trigger:hover .chevron-icon {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  min-width: 200px;
+  animation: slideDown 0.2s ease;
+  z-index: 100;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  gap: 0.5rem;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.dropdown-item.logout-item:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ========== AUTH BUTTONS ========== */
+.auth-buttons-modern {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-login-modern,
+.btn-signup-modern {
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  white-space: nowrap;
+}
+
+.btn-login-modern {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-login-modern:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-signup-modern {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-signup-modern:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+/* ========== MOBILE MENU ========== */
+.mobile-menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0.5rem;
+}
+
+.mobile-menu-button:hover {
+  color: var(--text-primary);
+}
+
+.navbar-mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem;
+  animation: slideDown 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-user-info {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  align-items: center;
+}
+
+.mobile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.mobile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mobile-user-name {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: 0;
+}
+
+.mobile-user-email {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.mobile-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: 0.5rem 0;
+}
+
+.mobile-menu-item {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.mobile-menu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.mobile-menu-item.logout-item:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.mobile-menu-item.signup-item {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  margin-top: 0.5rem;
+}
+
+.mobile-menu-item.signup-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .navbar-modern-container {
+    padding: 0.75rem 1rem;
+  }
+
+  .user-greeting-modern {
+    display: none;
+  }
+
+  .auth-buttons-modern {
+    display: none;
+  }
+}
+
+
+/* ==================== FILE 2: NavbarClassic.css (Traditional Style) ==================== */
+
+:root {
+  --color-teal: #34d399;
+  --color-purple: #8b5cf6;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #9ca3af;
+  --color-bg-dark: #111827;
+}
+
+.navbar-classic {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: rgba(17, 24, 39, 0.9);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 15px rgba(0, 0, 0, 0.25);
+  border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Base style for the logo */
+.navbar-left {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background-image: linear-gradient(to right, var(--color-teal), var(--color-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-left:hover {
+  opacity: 0.8;
+}
+
+/* Base style for generic nav buttons */
+.nav-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+}
+
+/* Ensures the navbar content is centered and wide */
+.navbar-content {
+  max-width: 80rem;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Wrapper for all right-side elements to control spacing */
+.navbar-right-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* User Greeting Text */
+.user-greeting {
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background-image: linear-gradient(to right, var(--color-text-primary), var(--color-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Login Button */
+.nav-btn.login {
+  border: 1px solid var(--color-purple);
+  color: var(--color-purple);
+  box-shadow: none;
+}
+
+.nav-btn.login:hover {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: var(--color-purple);
+}
+
+/* Signup Button */
+.nav-btn.signup {
+  border: 1px solid var(--color-teal);
+  color: var(--color-teal);
+  background-image: none;
+  box-shadow: none;
+}
+
+.nav-btn.signup:hover {
+  background-color: rgba(52, 211, 153, 0.15);
+  color: var(--color-teal);
+}
+
+/* Profile Button */
+.nav-btn.profile-btn-custom {
+  font-weight: 600;
+  border: 1px solid var(--color-purple);
+  color: var(--color-purple);
+  background-image: none;
+  box-shadow: none;
+}
+
+.nav-btn.profile-btn-custom:hover {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: var(--color-purple);
+}
+
+/* Logout Button */
+.nav-btn.logout-btn-custom {
+  border: none;
+  color: var(--color-text-secondary);
+  box-shadow: none;
+  padding: 0.5rem 0.75rem;
+}
+
+.nav-btn.logout-btn-custom:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-primary);
+  box-shadow: none;
+}
+
+/* Unauthenticated buttons */
+.auth-buttons-unauthenticated {
+  display: flex;
+  gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .navbar-left {
+    font-size: 1.25rem;
+  }
+
+  .navbar-right-links {
+    gap: 0.75rem;
+  }
+
+  .user-greeting {
+    display: none;
+  }
+}

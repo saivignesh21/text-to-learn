@@ -1,0 +1,119 @@
+:root {
+  --primary: #06b6d4;
+  --secondary: #a855f7;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+}
+
+/* ========== HEADING BLOCK - CONSISTENT SIZING ========== */
+
+.heading-block {
+  margin: 1.5rem 0 0.8rem 0;
+  padding: 0;
+  color: var(--text-primary);
+  line-height: 1.4;
+  font-weight: 700;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Level 1 Headings - Section Headers */
+.heading-block.level-1 {
+  font-size: 0.95rem;
+  margin-top: 1.2rem;
+  margin-bottom: 0.8rem;
+  color: var(--text-primary);
+}
+
+/* Level 2 Headings - Subsections */
+.heading-block.level-2 {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-top: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+/* Level 3 Headings - Sub-subsections */
+.heading-block.level-3 {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 0.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+/* Level 4 Headings - Minor headings */
+.heading-block.level-4 {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.6rem;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+/* Level 5 & 6 - Very minor headings */
+.heading-block.level-5,
+.heading-block.level-6 {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .heading-block.level-1 {
+    font-size: 0.95rem;
+    margin-top: 1rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .heading-block.level-2 {
+    font-size: 0.9rem;
+    margin-top: 0.9rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .heading-block.level-3 {
+    font-size: 0.85rem;
+    margin-top: 0.7rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .heading-block.level-4 {
+    font-size: 0.8rem;
+    margin-top: 0.55rem;
+    margin-bottom: 0.35rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .heading-block.level-1 {
+    font-size: 0.9rem;
+    margin-top: 0.9rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .heading-block.level-2 {
+    font-size: 0.85rem;
+    margin-top: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .heading-block.level-3 {
+    font-size: 0.8rem;
+    margin-top: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .heading-block.level-4 {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
+}
+

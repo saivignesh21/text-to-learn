@@ -1,0 +1,391 @@
+:root {
+  --primary: #06b6d4;
+  --primary-dark: #0891b2;
+  --secondary: #a855f7;
+  --secondary-dark: #7e22ce;
+  --bg-dark: #0f172a;
+  --bg-card: #1e293b;
+  --bg-hover: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --error: #ef4444;
+}
+
+/* ========== WRAPPER ========== */
+.chat-prompt-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
+/* ========== FORM ========== */
+.chat-prompt-form {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========== ERROR BANNER ========== */
+.prompt-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 0.9rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.prompt-error-banner svg {
+  flex-shrink: 0;
+  color: #f87171;
+}
+
+.error-close-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #fca5a5;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+.error-close-btn:hover {
+  color: #fecaca;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========== INPUT CONTAINER ========== */
+.prompt-input-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.prompt-input-container:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.2), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ========== TEXTAREA ========== */
+.prompt-textarea {
+  flex: 1;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: none;
+  max-height: 150px;
+  min-height: 44px;
+  outline: none;
+  font-weight: 500;
+}
+
+.prompt-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.prompt-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Custom scrollbar for textarea */
+.prompt-textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.prompt-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.prompt-textarea::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.3);
+  border-radius: 3px;
+}
+
+.prompt-textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.5);
+}
+
+/* Firefox scrollbar */
+.prompt-textarea {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(6, 182, 212, 0.3) transparent;
+}
+
+/* ========== SUBMIT BUTTON ========== */
+.prompt-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  border: none;
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.prompt-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.4);
+}
+
+.prompt-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.prompt-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========== SPINNER ANIMATION - FIXED ========== */
+.spinner-icon {
+  display: inline-block !important;
+  animation: spin-animation 1s linear infinite !important;
+  transform-origin: center;
+  will-change: transform;
+}
+
+@keyframes spin-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========== HELPER TEXT ========== */
+.prompt-helper-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  animation: fadeIn 0.4s ease-out 0.3s both;
+}
+
+.helper-icon {
+  display: flex;
+  align-items: center;
+  color: var(--primary);
+}
+
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 20px;
+  padding: 0 0.4rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  margin: 0 0.25rem;
+}
+
+/* ========== RESPONSIVE - TABLET ========== */
+@media (max-width: 768px) {
+  .chat-prompt-form {
+    gap: 0.5rem;
+  }
+
+  .prompt-input-container {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .prompt-textarea {
+    font-size: 0.95rem;
+  }
+
+  .prompt-submit-btn {
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .prompt-helper-text {
+    font-size: 0.75rem;
+  }
+
+  kbd {
+    min-width: 20px;
+    height: 18px;
+    padding: 0 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  .prompt-submit-btn span {
+    display: none;
+  }
+}
+
+/* ========== RESPONSIVE - MOBILE ========== */
+@media (max-width: 480px) {
+  .prompt-input-container {
+    flex-wrap: wrap;
+    padding: 0.75rem;
+  }
+
+  .prompt-textarea {
+    width: 100%;
+    min-height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .prompt-submit-btn {
+    padding: 0.6rem 0.8rem;
+    width: 100%;
+  }
+
+  .prompt-submit-btn span {
+    display: none;
+  }
+
+  .prompt-submit-btn svg {
+    margin: 0;
+  }
+
+  .prompt-helper-text {
+    gap: 0.3rem;
+    flex-wrap: wrap;
+  }
+
+  .helper-icon {
+    margin-right: -0.3rem;
+  }
+
+  kbd {
+    margin: 0 0.15rem;
+  }
+}
+
+/* ========== ACCESSIBILITY ========== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.prompt-textarea:focus {
+  outline: none;
+}
+
+.prompt-submit-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.error-close-btn:focus-visible {
+  outline: 2px solid var(--error);
+  outline-offset: 2px;
+}
+
+/* ========== DARK MODE ========== */
+@media (prefers-color-scheme: dark) {
+  .prompt-input-container {
+    background: var(--bg-card);
+  }
+
+  .prompt-textarea {
+    color: var(--text-primary);
+  }
+}
+
+/* ========== LIGHT MODE (optional) ========== */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-dark: #f8fafc;
+    --bg-card: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+  }
+
+  .prompt-input-container {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .prompt-input-container:focus-within {
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .prompt-error-banner {
+    background: rgba(239, 68, 68, 0.05);
+  }
+
+  kbd {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--text-secondary);
+  }
+}

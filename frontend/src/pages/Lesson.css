@@ -1,0 +1,249 @@
+
+/* Add this to frontend/pages/Profile.css */
+
+/* ==================== SAVED LESSONS BUTTON ==================== */
+
+.action-btn.saved-lessons-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 8px;
+  color: #d8b4fe;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.action-btn.saved-lessons-btn:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: #a855f7;
+  color: #e9d5ff;
+}
+
+.action-btn.saved-lessons-btn.active {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: #a855f7;
+  color: #e9d5ff;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+}
+
+/* ==================== SAVED LESSONS SECTION ==================== */
+
+.profile-saved-lessons-section {
+  margin-bottom: 3rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-saved-lessons-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(168, 85, 247, 0.2);
+}
+
+.profile-saved-lessons-section .section-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #e9d5ff;
+  margin: 0;
+}
+
+.profile-saved-lessons-section .section-header h2 svg {
+  color: #a855f7;
+}
+
+.lesson-count {
+  padding: 0.4rem 0.8rem;
+  background: rgba(168, 85, 247, 0.15);
+  border-radius: 6px;
+  color: #d8b4fe;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ==================== SAVED LESSONS GRID ==================== */
+
+.saved-lessons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* ==================== SAVED LESSON CARD ==================== */
+
+.saved-lesson-card {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 12px;
+  padding: 1.2rem;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.saved-lesson-card:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.1);
+  transform: translateY(-4px);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+}
+
+.saved-lesson-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.saved-lesson-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.3;
+}
+
+.saved-lesson-course {
+  color: #a855f7;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0.4rem 0 0 0;
+}
+
+.saved-lesson-module {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  margin: 0.3rem 0 0 0;
+}
+
+/* ==================== SAVED LESSON OBJECTIVES ==================== */
+
+.saved-lesson-objectives {
+  margin: 1rem 0;
+  padding: 0.8rem;
+  background: rgba(168, 85, 247, 0.08);
+  border-left: 3px solid #a855f7;
+  border-radius: 6px;
+}
+
+.saved-lesson-objectives strong {
+  color: #d8b4fe;
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.saved-lesson-objectives ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.saved-lesson-objectives li {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.saved-lesson-objectives li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+/* ==================== SAVED LESSON STATS ==================== */
+
+.saved-lesson-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(168, 85, 247, 0.1);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+  margin: 1rem 0;
+  flex: 1;
+}
+
+.saved-lesson-stats .stat {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* ==================== SAVED LESSON BUTTON ==================== */
+
+.saved-lesson-btn {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  border-radius: 6px;
+  color: #d8b4fe;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.saved-lesson-btn:hover {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(168, 85, 247, 0.25) 100%);
+  border-color: #a855f7;
+  color: #e9d5ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 768px) {
+  .profile-saved-lessons-section {
+    margin-bottom: 2rem;
+  }
+
+  .saved-lessons-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-btn.saved-lessons-btn span {
+    display: none;
+  }
+
+  .action-btn.saved-lessons-btn {
+    padding: 0.6rem;
+    min-width: 44px;
+    justify-content: center;
+  }
+
+  .profile-saved-lessons-section .section-header h2 {
+    font-size: 1.1rem;
+  }
+}
