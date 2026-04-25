@@ -1,7 +1,7 @@
 // backend/services/aiService.js - UPDATED WITH CONTEXT
 
 require("dotenv").config();
-const { OpenAI } = require("openai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const {
   generateCoursePrompt,
   generateLessonPrompt,
@@ -13,44 +13,38 @@ const {
   validateLesson,
 } = require("./validator");
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("❌ OPENAI_API_KEY missing in .env");
+if (!process.env.GEMINI_API_KEY) {
+  throw new Error("❌ GEMINI_API_KEY missing in .env");
 }
 
-const openai = new OpenAI();
-const MODEL = "gpt-4o-mini";
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const MODEL = "gemini-2.5-flash";
 const SYSTEM_INSTRUCTION =
   "You are a specialized course generator and expert educator. Your responses MUST be valid, unadorned JSON that strictly adheres to the requested schema. Do not include any surrounding text, markdown, code fences, or explanations. Return ONLY the raw JSON object.";
 
 /**
- * Calls the OpenAI API with a single prompt
+ * Calls the Gemini API with a single prompt
  */
 async function callLLM(prompt) {
-  console.log("🧠 Calling OpenAI API...");
+  console.log("🧠 Calling Gemini API...");
   try {
-    const response = await openai.chat.completions.create({
+    const model = genAI.getGenerativeModel({
       model: MODEL,
-      messages: [
-        {
-          role: "system",
-          content: SYSTEM_INSTRUCTION,
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
+      systemInstruction: SYSTEM_INSTRUCTION,
+      generationConfig: {
+        responseMimeType: "application/json",
+        temperature: 0.7,
+      },
     });
 
-    const text = response.choices[0].message.content;
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
     console.log(
-      "✅ OpenAI response received (length: " + (text ? text.length : 0) + ")"
+      "✅ Gemini response received (length: " + (text ? text.length : 0) + ")"
     );
     return text;
   } catch (error) {
-    console.error("🔥 OpenAI Error:", error.message);
+    console.error("🔥 Gemini Error:", error.message);
     throw error;
   }
 }

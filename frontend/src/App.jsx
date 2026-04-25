@@ -4,6 +4,7 @@ import { Auth0Provider } from '@auth0/auth0-react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
+import QuizGenerator from './pages/QuizGenerator';
 import './Appp.css';
 
 function App() {
@@ -272,6 +273,10 @@ function App() {
                   onViewProfileLesson={handleViewProfileLesson}
                 />
               }
+            />
+            <Route
+              path="quiz"
+              element={<QuizGenerator />}
             />
           </Route>
         </Routes>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Menu, X, BookOpen, ChevronDown } from "lucide-react";
+import { Menu, X, BookOpen, ChevronDown, Zap } from "lucide-react";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -79,6 +79,11 @@ const Navbar = () => {
         <div className="navbar-modern-right">
           {isAuthenticated ? (
             <>
+              {/* Quiz link */}
+              <Link to="/quiz" className="navbar-quiz-link">
+                <Zap size={14} /> Quiz
+              </Link>
+
               {/* User Greeting (Desktop) */}
               <div className="user-greeting-modern hidden md:flex">
                 <span>Welcome, <strong>{user?.nickname || user?.name || "User"}</strong></span>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
@@ -15,6 +16,9 @@ const Layout = ({
   onSelectLesson,
   onDeleteCourse,
 }) => {
+  const location = useLocation();
+  const isQuizPage = location.pathname === '/quiz';
+
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'error':
@@ -43,8 +47,8 @@ const Layout = ({
 
       {/* Main Container */}
       <div className="app-container">
-        {/* Sidebar - Hidden on profile page */}
-        <Sidebar
+        {/* Sidebar - Hidden on quiz page */}
+        {!isQuizPage && <Sidebar
           courses={courses}
           activeCourse={activeCourse}
           activeLesson={activeLesson}
@@ -53,7 +57,7 @@ const Layout = ({
           onSelectCourse={onSelectCourse}
           onSelectLesson={onSelectLesson}
           onDeleteCourse={onDeleteCourse}
-        />
+        />}
 
         {/* Main Content */}
         <main className="app-main-content">
