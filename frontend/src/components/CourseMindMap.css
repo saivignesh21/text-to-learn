@@ -1,0 +1,171 @@
+.mindmap-container {
+  width: 100%;
+  padding: 2rem 1rem;
+  overflow-x: auto;
+  background: var(--surface-1, #0f172a);
+  border-radius: 12px;
+  border: 1px solid var(--border-1, rgba(255, 255, 255, 0.05));
+  margin: 2rem 0;
+}
+
+.mindmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.mindmap-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #f1f5f9);
+}
+
+.mindmap-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 800px; /* Ensure horizontal scrolling on small screens */
+}
+
+/* Base Node Styles */
+.node {
+  position: relative;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  background: var(--surface-2, #1e293b);
+  border: 2px solid transparent;
+  color: var(--text-primary, #f1f5f9);
+  text-align: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 2;
+  cursor: default;
+}
+
+.node:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.node-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.node-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+/* Course Root Node */
+.node-course {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  border-color: #6366f1;
+  min-width: 250px;
+  margin-bottom: 3rem;
+}
+
+.node-course .node-title {
+  font-size: 1.25rem;
+  color: #c7d2fe;
+}
+
+/* Modules Row */
+.modules-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  position: relative;
+  width: 100%;
+}
+
+/* Connect Course to Modules */
+.modules-container::before {
+  content: '';
+  position: absolute;
+  top: -3rem;
+  left: 50%;
+  width: 2px;
+  height: 1.5rem;
+  background: #4f46e5;
+  transform: translateX(-50%);
+}
+
+.modules-line {
+  position: absolute;
+  top: -1.5rem;
+  height: 2px;
+  background: #4f46e5;
+  /* width is calculated inline */
+}
+
+.module-branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+}
+
+/* Connect Modules line to individual modules */
+.module-branch::before {
+  content: '';
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  width: 2px;
+  height: 1.5rem;
+  background: #4f46e5;
+  transform: translateX(-50%);
+}
+
+.node-module {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+  border-color: #10b981;
+  min-width: 180px;
+  margin-bottom: 2rem;
+}
+
+.node-module .node-title {
+  color: #a7f3d0;
+}
+
+/* Lessons Column */
+.lessons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  padding-top: 1rem;
+}
+
+/* Connect Module to Lessons */
+.lessons-container::before {
+  content: '';
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  width: 2px;
+  height: calc(100% + 1rem); /* Draw line through all lessons */
+  background: rgba(16, 185, 129, 0.3);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.node-lesson {
+  background: var(--surface-3, #334155);
+  border-color: rgba(255, 255, 255, 0.1);
+  min-width: 160px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+}
+
+.node-lesson:hover {
+  border-color: #38bdf8;
+  color: #bae6fd;
+}

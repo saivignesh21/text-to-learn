@@ -19,9 +19,12 @@ import ParagraphBlock from "./blocks/ParagraphBlock";
 import CodeBlock from "./blocks/CodeBlock";
 import VideoBlock from "./blocks/VideoBlock";
 import MCQBlock from "./blocks/MCQBlock";
+import FlashcardsBlock from "./blocks/FlashcardsBlock";
 
 import HinglishTranslator from "./HinglishTranslator";
 import PDFExporter from "./PDFExporter";
+import FeynmanSimulator from "./FeynmanSimulator";
+import AdaptiveCurriculum from "./AdaptiveCurriculum";
 
 import "./LessonRenderer.css";
 
@@ -31,6 +34,7 @@ const blockMap = {
   code: CodeBlock,
   video: VideoBlock,
   mcq: MCQBlock,
+  flashcards: FlashcardsBlock,
 };
 
 const LessonRenderer = ({
@@ -129,7 +133,12 @@ const LessonRenderer = ({
 
       try {
         if (lessonData._id) {
-          await markLessonComplete(lessonData._id, token);
+          const progressResult = await markLessonComplete(lessonData._id, token);
+          if (progressResult && progressResult.xpGained) {
+             // We can use the existing showNotification from Home.jsx if it was passed down,
+             // but currently it's just alert.
+             alert(`🎉 Lesson Completed! You earned ${progressResult.xpGained} XP! \nCurrent Level: ${Math.floor(Math.sqrt(progressResult.totalXp / 100)) + 1}`);
+          }
         }
       } catch (progressErr) {
         console.warn("Could not mark lesson as complete:", progressErr);
@@ -269,6 +278,21 @@ const LessonRenderer = ({
             </div>
           )}
         </section>
+
+        <section className="feynman-section">
+          <FeynmanSimulator lesson={lessonData} />
+        </section>
+
+        {lessonIdx === totalLessons - 1 && (
+          <section className="adaptive-section">
+            <AdaptiveCurriculum 
+              course={course} 
+              module={module} 
+              lesson={lessonData} 
+              onPathGenerated={() => window.dispatchEvent(new Event('course_updated'))}
+            />
+          </section>
+        )}
       </main>
 
       <footer className="lesson-footer">

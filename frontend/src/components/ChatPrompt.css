@@ -106,3 +106,49 @@ kbd {
   .prompt-submit-btn span { display: none; }
   .prompt-submit-btn { padding: 0.55rem 0.7rem; }
 }
+
+/* Difficulty Selector */
+.difficulty-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.5rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+
+.difficulty-label {
+  font-size: 0.85rem;
+  color: var(--tx-3);
+  font-weight: 500;
+  margin-right: 0.2rem;
+}
+
+.difficulty-btn {
+  background: transparent;
+  border: 1px solid var(--border-2);
+  color: var(--tx-2);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.difficulty-btn:hover:not(:disabled) {
+  border-color: rgba(32,197,216,0.5);
+  color: var(--tx-1);
+}
+
+.difficulty-btn.active {
+  background: rgba(32,197,216,0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.difficulty-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

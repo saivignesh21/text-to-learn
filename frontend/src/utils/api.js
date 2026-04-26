@@ -69,9 +69,10 @@ export const apiRequest = async (
 /**
  * Generate a structured course from a topic prompt
  */
-export const generateCourseAI = async (topic, token = null) => {
+export const generateCourseAI = async (topic, difficulty = "intermediate", token = null) => {
   console.group("generateCourseAI");
   console.log("Topic:", topic);
+  console.log("Difficulty:", difficulty);
   console.log("Has Token:", !!token);
 
   if (!topic || !topic.trim()) {
@@ -85,7 +86,7 @@ export const generateCourseAI = async (topic, token = null) => {
     const result = await apiRequest(
       "/ai/generate-course",
       "POST",
-      { topic: topic.trim() },
+      { topic: topic.trim(), difficulty },
       token
     );
     console.log("Success! Generated course:", result);
@@ -121,6 +122,34 @@ export const generateLessonAI = async (
   } catch (err) {
     console.error("Lesson generation error:", err);
     throw new Error(err.message || "Failed to generate lesson");
+  }
+};
+
+/**
+ * Ask the Study Buddy chatbot a question about the lesson
+ */
+export const askStudyBuddy = async (
+  question,
+  courseTitle,
+  moduleTitle,
+  lessonTitle,
+  lessonContent,
+  history = [],
+  token = null,
+  mode = "standard"
+) => {
+  if (!question) throw new Error("Question is required");
+  
+  try {
+    return await apiRequest(
+      "/ai/study-buddy",
+      "POST",
+      { question, courseTitle, moduleTitle, lessonTitle, lessonContent, history, mode },
+      token
+    );
+  } catch (err) {
+    console.error("Study Buddy error:", err);
+    throw new Error(err.message || "Failed to get response from Study Buddy");
   }
 };
 
@@ -461,17 +490,28 @@ export const markLessonComplete = async (lessonId, token) => {
   if (!lessonId) throw new Error("Lesson ID is required");
   try {
     console.log("Marking lesson as complete:", lessonId);
-    return await apiRequest(
+    const result = await apiRequest(
       `/progress/lessons/${lessonId}/complete`,
       "POST",
       {},
       token
     );
+    window.dispatchEvent(new Event('progress_updated'));
+    return result;
   } catch (err) {
     console.error("Error marking lesson complete:", err);
     // Don't throw - this is not critical for the user flow
     return null;
   }
+};
+
+export const submitFeynmanExplanation = async (lessonTitle, lessonContent, userExplanation, token = null) => {
+  return await apiRequest(
+    "/ai/feynman",
+    "POST",
+    { lessonTitle, lessonContent, userExplanation },
+    token
+  );
 };
 
 export const getUserProgress = async (courseId = null, token) => {
@@ -485,11 +525,23 @@ export const getUserProgress = async (courseId = null, token) => {
   }
 };
 
+export const generateAdaptivePaths = async (courseTitle, lessonTitle, token = null) => {
+  return await apiRequest(
+    "/ai/generate-paths",
+    "POST",
+    { courseTitle, lessonTitle },
+    token
+  );
+};
+
 // ==================== EXPORT FOR TESTING ====================
 
 const apiExports = {
   generateCourseAI,
   generateLessonAI,
+  askStudyBuddy,
+  submitFeynmanExplanation,
+  generateAdaptivePaths,
   getAllCourses,
   getCourseById,
   getUserCourses,

@@ -531,11 +531,15 @@ func main() {
 }
 
 /**
- * Generate a comprehensive prompt for course creation (UNCHANGED)
+ * Generate a comprehensive prompt for course creation
  */
 exports.generateCoursePrompt = (
-  topic
+  topic,
+  difficulty = "intermediate"
 ) => `You are a professional curriculum designer. Generate a comprehensive course outline for: "${topic}"
+
+TARGET AUDIENCE DIFFICULTY LEVEL: ${difficulty.toUpperCase()}
+Tailor the course title, modules, and progression specifically for a ${difficulty} level learner.
 
 RESPOND WITH ONLY A VALID JSON OBJECT. NO OTHER TEXT.
 
@@ -570,7 +574,8 @@ exports.generateLessonPrompt = (
   moduleIndex = 0,
   lessonIndex = 0,
   totalModules = 4,
-  totalLessons = 16
+  totalLessons = 16,
+  difficulty = "intermediate"
 ) => {
   // Determine appropriate language for this course
   const language = determineLanguage(courseTitle, moduleTitle, lessonTitle);
@@ -594,34 +599,26 @@ exports.generateLessonPrompt = (
   );
 
   const contentStrategy = getContentStrategy(context, lessonTitle);
-  const mcqStrategy = generateMCQStrategy(
-    context,
-    lessonTitle,
-    contentStrategy
-  );
 
   let depthGuidance = "";
-  if (context.isFoundational) {
-    depthGuidance = `FOUNDATIONAL LESSON - First lesson in course:
-    - Use beginner-friendly language with clear definitions
-    - Explain basic concepts thoroughly
-    - Start with "why should I care about this?"
-    - Use simple, relatable examples
-    - Don't assume any prior knowledge`;
-  } else if (context.isAdvancedLesson) {
-    depthGuidance = `ADVANCED LESSON - In final modules:
-    - Assume strong foundation knowledge
-    - Focus on nuances, edge cases, and optimization
-    - Discuss performance implications
-    - Cover professional standards
-    - Reference earlier concepts briefly`;
+  if (difficulty === "beginner") {
+    depthGuidance = `DIFFICULTY: BEGINNER (Explain Like I'm 5)
+    - Use extremely simple, beginner-friendly language
+    - Explain every basic concept thoroughly
+    - Avoid jargon or define it immediately
+    - Use relatable, real-world analogies`;
+  } else if (difficulty === "expert") {
+    depthGuidance = `DIFFICULTY: EXPERT
+    - Assume strong prior domain knowledge
+    - Focus on advanced concepts, nuances, and edge cases
+    - Discuss performance, architecture, and professional standards
+    - Skip basic definitions`;
   } else {
-    depthGuidance = `INTERMEDIATE LESSON - Building knowledge progression:
-    - Assume learners have basic foundation
+    depthGuidance = `DIFFICULTY: INTERMEDIATE
+    - Assume learners have a basic foundation
     - Introduce practical applications
     - Show real-world usage patterns
-    - Discuss trade-offs
-    - Connect to surrounding lessons`;
+    - Discuss trade-offs`;
   }
 
   let contentStructure = "";
@@ -735,6 +732,20 @@ RESPOND WITH ONLY VALID JSON. NO MARKDOWN, NO CODE FENCES, NO EXPLANATIONS.
     {
       "type": "video",
       "query": "${lessonTitle} tutorial with practical examples and detailed explanation"
+    },
+    {
+      "type": "heading",
+      "text": "Key Terms (Flashcards)",
+      "level": 2
+    },
+    {
+      "type": "flashcards",
+      "cards": [
+        {"front": "Key Term 1", "back": "Clear, concise definition of Key Term 1"},
+        {"front": "Key Term 2", "back": "Clear, concise definition of Key Term 2"},
+        {"front": "Key Term 3", "back": "Clear, concise definition of Key Term 3"},
+        {"front": "Key Term 4", "back": "Clear, concise definition of Key Term 4"}
+      ]
     },
     {
       "type": "heading",
@@ -915,3 +926,265 @@ function buildHeading4(strategy, lessonTitle) {
 }
 
 module.exports.getLessonContext = getLessonContext;
+
+/**
+ * Generate a prompt for the Feynman Simulator evaluation
+ */
+exports.feynmanPrompt = (lessonTitle, lessonContent, userExplanation) => {
+  return `You are acting as a curious beginner student trying to understand "${lessonTitle}". 
+Your peer (the user) has just explained the concept to you. 
+
+Here is the context of what they were supposed to learn:
+---
+${JSON.stringify(lessonContent)}
+---
+
+Here is their explanation:
+---
+${userExplanation}
+---
+
+Evaluate their explanation. 
+If they did a great job and captured the core essence accurately and simply, congratulate them and give them a high grade.
+If their explanation is confusing, uses too much jargon without defining it, or has gaps, act slightly confused. Point out exactly what confused you ("Wait, I don't get what X means...") and ask them to clarify.
+If they are factually incorrect, gently correct them.
+
+Respond ONLY with a VALID JSON object in the following format:
+{
+  "isAccurate": boolean, // true if mostly correct, false if significant errors
+      "explanation": "This is correct because it directly relates to ${lessonTitle} as taught in this lesson."
+    },
+    {
+      "type": "mcq",
+      "question": "How would you apply ${lessonTitle} in practice?",
+      "options": ["Plausible distractor", "Correct practical application", "Plausible distractor", "Plausible distractor"],
+      "answer": 1,
+      "explanation": "This demonstrates proper application of ${lessonTitle}."
+    },
+    {
+      "type": "mcq",
+      "question": "Why is ${lessonTitle} important?",
+      "options": ["Plausible distractor", "Plausible distractor", "Correct importance reason", "Plausible distractor"],
+      "answer": 2,
+      "explanation": "This correctly identifies why ${lessonTitle} matters in this context."
+    },
+    {
+      "type": "mcq",
+      "question": "What is a best practice for ${lessonTitle}?",
+      "options": ["Plausible distractor", "Plausible distractor", "Plausible distractor", "Correct best practice"],
+      "answer": 3,
+      "explanation": "This represents professional best practices for ${lessonTitle}."
+    }
+  ]
+}
+
+OUTPUT ONLY RAW JSON. START WITH { END WITH }`;
+
+  return prompt;
+};
+
+// Helper functions (KEPT FROM ORIGINAL)
+function getLessonContext(
+  courseTitle,
+  moduleTitle,
+  lessonTitle,
+  moduleIndex,
+  lessonIndex,
+  totalModules,
+  totalLessons
+) {
+  const isFoundational = moduleIndex === 0 && lessonIndex === 0;
+  const isFirstModule = moduleIndex === 0;
+  const isLastModule = moduleIndex >= totalModules - 2;
+  const isFirstLesson = lessonIndex === 0;
+  const isLastLesson = lessonIndex === totalLessons - 1;
+  const isSynthesisLesson =
+    lessonTitle.toLowerCase().includes("summary") ||
+    lessonTitle.toLowerCase().includes("project");
+  const isPracticalLesson =
+    lessonTitle.toLowerCase().includes("practice") ||
+    lessonTitle.toLowerCase().includes("implementation");
+  const isConceptualLesson =
+    lessonTitle.toLowerCase().includes("introduction") ||
+    lessonTitle.toLowerCase().includes("fundamentals");
+  const isAdvancedLesson =
+    lessonTitle.toLowerCase().includes("advanced") || isLastModule;
+
+  return {
+    isFoundational,
+    isFirstModule,
+    isLastModule,
+    isFirstLesson,
+    isLastLesson,
+    isSynthesisLesson,
+    isPracticalLesson,
+    isConceptualLesson,
+    isAdvancedLesson,
+    position: `lesson ${lessonIndex + 1} of ${totalLessons}`,
+    depth: isFoundational
+      ? "foundational"
+      : isLastModule
+      ? "advanced"
+      : "intermediate",
+  };
+}
+
+function getContentStrategy(context, lessonTitle) {
+  if (context.isSynthesisLesson) {
+    return {
+      type: "synthesis",
+      sections: ["Summary", "Connections", "Patterns", "Integration"],
+    };
+  }
+  if (context.isPracticalLesson) {
+    return {
+      type: "practical",
+      sections: [
+        "Getting Started",
+        "Implementation",
+        "Debugging",
+        "Optimization",
+      ],
+    };
+  }
+  if (context.isConceptualLesson) {
+    return {
+      type: "conceptual",
+      sections: ["Concept", "Importance", "Terminology", "Context"],
+    };
+  }
+  return {
+    type: "technical",
+    sections: ["Fundamentals", "Mechanics", "Application", "Patterns"],
+  };
+}
+
+function generateMCQStrategy(context, lessonTitle, contentStrategy) {
+  return {
+    q1Type: "concept",
+    q2Type: "application",
+    q3Type: "importance",
+    q4Type: "best_practice",
+  };
+}
+
+function buildHeading1(strategy, lessonTitle) {
+  switch (strategy.type) {
+    case "synthesis":
+      return `Bringing Together: ${lessonTitle}`;
+    case "practical":
+      return `Getting Started with ${lessonTitle}`;
+    case "conceptual":
+      return `Understanding ${lessonTitle}`;
+    default:
+      return `Introduction to ${lessonTitle}`;
+  }
+}
+
+function buildHeading2(strategy, lessonTitle) {
+  switch (strategy.type) {
+    case "synthesis":
+      return `How Concepts Connect`;
+    case "practical":
+      return `Implementation Guide`;
+    case "conceptual":
+      return `Core Principles`;
+    default:
+      return `How It Works`;
+  }
+}
+
+function buildHeading3(strategy, lessonTitle) {
+  switch (strategy.type) {
+    case "synthesis":
+      return `Recognizing Patterns`;
+    case "practical":
+      return `Common Issues & Solutions`;
+    case "conceptual":
+      return `Why It Matters`;
+    default:
+      return `When & How to Apply`;
+  }
+}
+
+function buildHeading4(strategy, lessonTitle) {
+  switch (strategy.type) {
+    case "synthesis":
+      return `Integration & Application`;
+    case "practical":
+      return `Best Practices`;
+    case "conceptual":
+      return `In Context`;
+    default:
+      return `Best Practices`;
+  }
+}
+
+module.exports.getLessonContext = getLessonContext;
+
+/**
+ * Generate a prompt for the Feynman Simulator evaluation
+ */
+exports.feynmanPrompt = (lessonTitle, lessonContent, userExplanation) => {
+  return `You are acting as a curious beginner student trying to understand "${lessonTitle}". 
+Your peer (the user) has just explained the concept to you. 
+
+Here is the context of what they were supposed to learn:
+---
+${JSON.stringify(lessonContent)}
+---
+
+Here is their explanation:
+---
+${userExplanation}
+---
+
+Evaluate their explanation. 
+If they did a great job and captured the core essence accurately and simply, congratulate them and give them a high grade.
+If their explanation is confusing, uses too much jargon without defining it, or has gaps, act slightly confused. Point out exactly what confused you ("Wait, I don't get what X means...") and ask them to clarify.
+If they are factually incorrect, gently correct them.
+
+Respond ONLY with a VALID JSON object in the following format:
+{
+  "isAccurate": boolean, // true if mostly correct, false if significant errors
+  "feedback": "Your response acting as the student. Point out what was good, what was confusing, or what was wrong.",
+  "followUpQuestion": "A clarifying question to push their understanding further (or null if perfect)",
+  "grade": "A letter grade (A, B, C, D, or F) based on simplicity and accuracy"
+}
+
+OUTPUT ONLY RAW JSON. START WITH { END WITH }`;
+};
+
+/**
+ * Generate a prompt for the Adaptive Curriculum (Choose Your Own Adventure)
+ */
+exports.adaptivePathsPrompt = (courseTitle, lessonTitle) => {
+  return `You are an expert curriculum designer. The student has just finished learning about "${lessonTitle}" in the course "${courseTitle}".
+
+Generate exactly 3 diverging, exciting paths for what they should learn NEXT. 
+The paths must be completely different from each other to give the student a real choice.
+- Path 1 should be a "Deep Dive" into the underlying theory or mechanics.
+- Path 2 should be a "Practical Application" showing how this is used in the real world.
+- Path 3 should be a "Lateral Concept" or an advanced edge case related to the topic.
+
+Respond ONLY with a VALID JSON array of objects in the following format:
+[
+  {
+    "type": "Deep Dive",
+    "title": "Title of the new lesson",
+    "description": "A short, exciting 1-sentence hook of what they will learn."
+  },
+  {
+    "type": "Practical Application",
+    "title": "Title of the new lesson",
+    "description": "A short, exciting 1-sentence hook of what they will learn."
+  },
+  {
+    "type": "Lateral Concept",
+    "title": "Title of the new lesson",
+    "description": "A short, exciting 1-sentence hook of what they will learn."
+  }
+]
+
+OUTPUT ONLY RAW JSON. START WITH [ END WITH ]`;
+};

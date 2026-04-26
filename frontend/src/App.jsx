@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Auth0Provider } from '@auth0/auth0-react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import QuizGenerator from './pages/QuizGenerator';
+import { getCourseById } from './utils/api';
 import './Appp.css';
 
 function App() {
@@ -30,6 +31,25 @@ function App() {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 4000);
   }, []);
+
+  // Listen for external course updates (like Adaptive Curriculum adding lessons)
+  useEffect(() => {
+    const handleCourseUpdate = async () => {
+      if (activeCourse && activeCourse._id) {
+        try {
+          console.log('🔄 Reloading active course due to course_updated event...');
+          const freshCourse = await getCourseById(activeCourse._id);
+          setActiveCourse(freshCourse);
+          showNotification('Course curriculum updated dynamically!', 'success');
+        } catch (error) {
+          console.error('❌ Error refreshing course:', error);
+        }
+      }
+    };
+
+    window.addEventListener('course_updated', handleCourseUpdate);
+    return () => window.removeEventListener('course_updated', handleCourseUpdate);
+  }, [activeCourse, showNotification]);
 
   const handleCourseGenerated = useCallback((course) => {
     try {

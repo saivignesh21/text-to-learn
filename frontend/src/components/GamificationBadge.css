@@ -1,0 +1,54 @@
+.gamification-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface-2, #1e293b);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border-2, rgba(255,255,255,0.1));
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #cbd5e1);
+}
+
+.stat-item.streak .active {
+  color: #f97316; /* Orange flame */
+  animation: pulse-flame 2s infinite ease-in-out;
+}
+
+.stat-item.level .active {
+  color: #eab308; /* Yellow star/award */
+}
+
+.xp-bar-container {
+  width: 60px;
+  height: 6px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-left: 4px;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #a855f7, #3b82f6);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes pulse-flame {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); filter: brightness(1.2); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .xp-bar-container {
+    display: none;
+  }
+}

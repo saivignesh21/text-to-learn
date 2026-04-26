@@ -52,10 +52,10 @@ async function callLLM(prompt) {
 /**
  * Generate a complete course structure
  */
-exports.generateCourse = async (topic) => {
+exports.generateCourse = async (topic, difficulty) => {
   try {
-    console.log("📚 Generating course for topic:", topic);
-    const prompt = generateCoursePrompt(topic);
+    console.log(`📚 Generating course for topic: ${topic} [Difficulty: ${difficulty}]`);
+    const prompt = generateCoursePrompt(topic, difficulty);
     const raw = await callLLM(prompt);
     const parsed = safeJsonParse(raw);
 
@@ -86,11 +86,12 @@ exports.generateLesson = async (
   moduleIndex = 0,
   lessonIndex = 0,
   totalModules = 4,
-  totalLessons = 16
+  totalLessons = 16,
+  difficulty = "intermediate"
 ) => {
   try {
     console.log(
-      `📝 Generating lesson: "${lessonTitle}" (Module ${
+      `📝 Generating lesson: "${lessonTitle}" [Difficulty: ${difficulty}] (Module ${
         moduleIndex + 1
       }/${totalModules}, Lesson ${lessonIndex + 1}/${totalLessons})`
     );
@@ -103,7 +104,8 @@ exports.generateLesson = async (
       moduleIndex,
       lessonIndex,
       totalModules,
-      totalLessons
+      totalLessons,
+      difficulty
     );
 
     const raw = await callLLM(prompt);

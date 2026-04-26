@@ -16,7 +16,7 @@ const {
  */
 async function generateCourseHandler(req, res, next) {
   try {
-    const { topic } = req.body;
+    const { topic, difficulty = "intermediate" } = req.body;
 
     if (!topic || !topic.trim()) {
       return res.status(400).json({
@@ -26,9 +26,9 @@ async function generateCourseHandler(req, res, next) {
     }
 
     console.log("\n🧠 ========== GENERATING COURSE ==========");
-    console.log("📚 Topic:", topic);
+    console.log("📚 Topic:", topic, "| Difficulty:", difficulty);
 
-    const data = await generateCourse(topic.trim());
+    const data = await generateCourse(topic.trim(), difficulty);
 
     if (!validateCourse(data)) {
       console.error("❌ Course validation failed");
@@ -71,7 +71,12 @@ async function generateCourseHandler(req, res, next) {
           const lessonData = await generateLesson(
             data.title,
             m.title,
-            lessonTitle
+            lessonTitle,
+            mi,
+            li,
+            data.modules.length,
+            m.lessons.length,
+            difficulty
           );
 
           if (!validateLesson(lessonData)) {
@@ -212,7 +217,7 @@ async function generateCourseHandler(req, res, next) {
  */
 async function generateLessonHandler(req, res, next) {
   try {
-    const { courseTitle, moduleTitle, lessonTitle } = req.body;
+    const { courseTitle, moduleTitle, lessonTitle, difficulty = "intermediate" } = req.body;
 
     if (!courseTitle || !moduleTitle || !lessonTitle) {
       return res.status(400).json({
@@ -225,11 +230,14 @@ async function generateLessonHandler(req, res, next) {
     console.log("📚 Course:", courseTitle);
     console.log("📖 Module:", moduleTitle);
     console.log("📝 Lesson:", lessonTitle);
+    console.log("🎯 Difficulty:", difficulty);
 
     const lessonData = await generateLesson(
       courseTitle,
       moduleTitle,
-      lessonTitle
+      lessonTitle,
+      0, 0, 4, 16,
+      difficulty
     );
 
     if (!validateLesson(lessonData)) {
@@ -270,7 +278,204 @@ async function generateLessonHandler(req, res, next) {
   }
 }
 
+/**
+ * Context-Aware Study Buddy Chatbot
+ * POST /api/ai/study-buddy
+ */
+async function studyBuddyHandler(req, res, next) {
+  try {
+    const { question, courseTitle, moduleTitle, lessonTitle, lessonContent, history = [], mode = "standard" } = req.body;
+
+    if (!question || !lessonContent) {
+      return res.status(400).json({
+        message: "Question and lessonContent are required",
+        error: "MISSING_FIELDS",
+      });
+    }
+
+    const { GoogleGenerativeAI } = require("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    let contentText = "";
+    if (typeof lessonContent === "string") {
+      contentText = lessonContent;
+    } else if (Array.isArray(lessonContent)) {
+      contentText = lessonContent.map(b => JSON.stringify(b)).join("\n");
+    }
+    
+    // Truncate if too long to save context window (first ~15000 chars should be enough for a single lesson context)
+    if (contentText.length > 15000) contentText = contentText.slice(0, 15000) + "...[truncated]";
+
+    let systemPrompt = `You are a friendly, encouraging, and expert AI Study Buddy helping a student understand their course material. 
+Explain things clearly using simple terms unless asked for advanced details. Use relatable analogies when helpful. Format your response in clean Markdown.
+
+LESSON CONTEXT:
+Course: ${courseTitle || 'Unknown'}
+Module: ${moduleTitle || 'Unknown'}
+Lesson: ${lessonTitle || 'Unknown'}
+Content:
+"""
+${contentText}
+"""
+
+Instructions:
+1. Focus your answers on helping the student understand the specific lesson context provided above.
+2. If the user asks something completely unrelated to education or the topic, politely steer them back.
+3. Be concise but thorough.`;
+
+    if (mode === "socratic") {
+      systemPrompt = `You are a Socratic AI Tutor helping a student understand their course material.
+Instead of giving direct answers, you MUST use the Socratic method.
+When the user asks a question, guide them to the answer by asking a thought-provoking, clarifying question.
+Do NOT give away the final answer immediately. Lead them to it step by step.
+Keep your responses extremely concise (1-2 sentences max) as they will be read aloud by a Voice Synthesizer.
+Do not use Markdown formatting like ** or \` as it will be read aloud.
+
+LESSON CONTEXT:
+Course: ${courseTitle || 'Unknown'}
+Module: ${moduleTitle || 'Unknown'}
+Lesson: ${lessonTitle || 'Unknown'}
+Content:
+"""
+${contentText}
+"""`;
+    }
+
+    const chat = model.startChat({
+      history: [
+        { role: "user", parts: [{ text: systemPrompt }] },
+        { role: "model", parts: [{ text: "I understand. I am ready to be a helpful study buddy based on this context!" }] },
+        // Map previous history if any
+        ...history.map(msg => ({
+          role: msg.role === 'ai' ? 'model' : 'user',
+          parts: [{ text: msg.text }]
+        }))
+      ],
+    });
+
+    const result = await chat.sendMessage(question);
+    const responseText = result.response.text();
+
+    res.status(200).json({
+      success: true,
+      answer: responseText
+    });
+  } catch (err) {
+    console.error("🔥 ERROR in studyBuddyHandler:", err);
+    res.status(500).json({
+      success: false,
+      message: "Error processing study buddy request",
+      error: err.message,
+    });
+  }
+}
+
+/**
+ * Feynman Technique Simulator Handler
+ * POST /api/ai/feynman
+ */
+async function feynmanHandler(req, res, next) {
+  try {
+    const { lessonTitle, lessonContent, userExplanation } = req.body;
+
+    if (!lessonTitle || !lessonContent || !userExplanation) {
+      return res.status(400).json({
+        message: "lessonTitle, lessonContent, and userExplanation are required",
+        error: "MISSING_FIELDS",
+      });
+    }
+
+    const { GoogleGenerativeAI } = require("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
+    const { feynmanPrompt } = require("../services/promptTemplates");
+    const prompt = feynmanPrompt(lessonTitle, lessonContent, userExplanation);
+
+    const result = await model.generateContent(prompt);
+    let text = result.response.text();
+    
+    // Clean up markdown fences if necessary
+    if (text.startsWith("\`\`\`json")) {
+      text = text.replace(/^\`\`\`json\s*/, "").replace(/\`\`\`\s*$/, "");
+    } else if (text.startsWith("\`\`\`")) {
+      text = text.replace(/^\`\`\`\s*/, "").replace(/\`\`\`\s*$/, "");
+    }
+    
+    const parsedFeedback = JSON.parse(text);
+
+    res.status(200).json({
+      success: true,
+      data: parsedFeedback
+    });
+  } catch (err) {
+    console.error("🔥 ERROR in feynmanHandler:", err);
+    res.status(500).json({
+      success: false,
+      message: "Error processing Feynman evaluation",
+      error: err.message,
+    });
+  }
+}
+
+/**
+ * Generate adaptive paths for Choose Your Own Adventure
+ * POST /api/ai/generate-paths
+ */
+async function generatePathsHandler(req, res, next) {
+  try {
+    const { courseTitle, lessonTitle } = req.body;
+
+    if (!courseTitle || !lessonTitle) {
+      return res.status(400).json({
+        message: "courseTitle and lessonTitle are required",
+        error: "MISSING_FIELDS",
+      });
+    }
+
+    const { GoogleGenerativeAI } = require("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
+    const { adaptivePathsPrompt } = require("../services/promptTemplates");
+    const prompt = adaptivePathsPrompt(courseTitle, lessonTitle);
+
+    const result = await model.generateContent(prompt);
+    let text = result.response.text();
+    
+    if (text.startsWith("\`\`\`json")) {
+      text = text.replace(/^\`\`\`json\s*/, "").replace(/\`\`\`\s*$/, "");
+    } else if (text.startsWith("\`\`\`")) {
+      text = text.replace(/^\`\`\`\s*/, "").replace(/\`\`\`\s*$/, "");
+    }
+    
+    const parsedPaths = JSON.parse(text);
+
+    res.status(200).json({
+      success: true,
+      data: parsedPaths
+    });
+  } catch (err) {
+    console.error("🔥 ERROR in generatePathsHandler:", err);
+    res.status(500).json({
+      success: false,
+      message: "Error generating adaptive paths",
+      error: err.message,
+    });
+  }
+}
+
 module.exports = {
   generateCourseHandler,
   generateLessonHandler,
+  studyBuddyHandler,
+  feynmanHandler,
+  generatePathsHandler,
 };

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Menu, X, BookOpen, ChevronDown, Zap } from "lucide-react";
+import GamificationBadge from "./GamificationBadge";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -87,6 +88,11 @@ const Navbar = () => {
               {/* User Greeting (Desktop) */}
               <div className="user-greeting-modern hidden md:flex">
                 <span>Welcome, <strong>{user?.nickname || user?.name || "User"}</strong></span>
+              </div>
+
+              {/* Gamification Badge */}
+              <div className="hidden md:flex">
+                <GamificationBadge />
               </div>
 
               {/* Profile Dropdown */}

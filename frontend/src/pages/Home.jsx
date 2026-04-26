@@ -6,6 +6,7 @@ import { scrollToTop } from '../utils/scrollToTop';
 import ChatPrompt from '../components/ChatPrompt';
 import CoursePreview from '../components/CoursePreview';
 import LessonRenderer from '../components/LessonRenderer';
+import StudyBuddy from '../components/StudyBuddy';
 import { saveCourse } from '../utils/api';
 import './Home.css';
 
@@ -356,6 +357,13 @@ const Home = ({
         </div>
       )}
       {renderContent()}
+      {(activeCourse || activeLesson) && (
+        <StudyBuddy 
+          course={activeLesson?.course || activeCourse}
+          module={activeLesson?.module}
+          lesson={activeLesson?.lesson || (activeLesson && !activeLesson.module ? activeLesson : null)}
+        />
+      )}
     </>
   );
 };

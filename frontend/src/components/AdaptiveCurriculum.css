@@ -1,0 +1,119 @@
+.adaptive-curriculum-container {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: var(--surface-1, #0f172a);
+  border-radius: 12px;
+  border: 1px solid var(--border-1, rgba(255, 255, 255, 0.1));
+}
+
+.adaptive-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.adaptive-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #f8fafc);
+  margin: 0;
+}
+
+.adaptive-description {
+  color: var(--text-secondary, #94a3b8);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.adaptive-paths-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.path-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-2, #1e293b);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.path-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  border-color: var(--primary, #6366f1);
+}
+
+.path-type {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--primary-light, #a5b4fc);
+  margin-bottom: 0.5rem;
+}
+
+.path-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #f8fafc);
+  margin-bottom: 1rem;
+}
+
+.path-description {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #94a3b8);
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.path-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary, #6366f1);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+.path-card:hover .path-action {
+  color: var(--primary-light, #a5b4fc);
+}
+
+.adaptive-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.adaptive-loading p {
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+/* Specific Path Styles */
+.path-card.deep-dive {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(49, 46, 129, 0.4) 100%);
+}
+.path-card.deep-dive:hover { border-color: #6366f1; }
+
+.path-card.practical-application {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(6, 95, 70, 0.4) 100%);
+}
+.path-card.practical-application:hover { border-color: #10b981; }
+
+.path-card.lateral-concept {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(120, 53, 15, 0.4) 100%);
+}
+.path-card.lateral-concept:hover { border-color: #f59e0b; }

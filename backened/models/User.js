@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema(
     createdAt: { type: Date, default: Date.now },
     // Optionally keep list of created courses for quick lookups (denormalized)
     courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
+    // Gamification & Study Streaks
+    xp: { type: Number, default: 0 },
+    streakCount: { type: Number, default: 0 },
+    lastStudyDate: { type: Date, default: null },
+    completedLessons: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }],
   },
   { timestamps: true }
 );

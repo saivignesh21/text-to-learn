@@ -11,6 +11,7 @@ const ChatPrompt = ({
   isGenerating = false 
 }) => {
   const [prompt, setPrompt] = useState("");
+  const [difficulty, setDifficulty] = useState("intermediate");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const textareaRef = useRef(null);
@@ -53,7 +54,7 @@ const ChatPrompt = ({
         }
       }
 
-      const response = await generateCourseAI(prompt.trim(), token);
+      const response = await generateCourseAI(prompt.trim(), difficulty, token);
       const courseData = response?.data || response;
 
       if (!courseData) {
@@ -137,6 +138,34 @@ const ChatPrompt = ({
                 <span>Generate</span>
               </>
             )}
+          </button>
+        </div>
+
+        <div className="difficulty-selector">
+          <span className="difficulty-label">Level:</span>
+          <button 
+            type="button" 
+            className={`difficulty-btn ${difficulty === 'beginner' ? 'active' : ''}`}
+            onClick={() => setDifficulty('beginner')}
+            disabled={loading || isGenerating}
+          >
+            Beginner
+          </button>
+          <button 
+            type="button" 
+            className={`difficulty-btn ${difficulty === 'intermediate' ? 'active' : ''}`}
+            onClick={() => setDifficulty('intermediate')}
+            disabled={loading || isGenerating}
+          >
+            Intermediate
+          </button>
+          <button 
+            type="button" 
+            className={`difficulty-btn ${difficulty === 'expert' ? 'active' : ''}`}
+            onClick={() => setDifficulty('expert')}
+            disabled={loading || isGenerating}
+          >
+            Expert
           </button>
         </div>
 

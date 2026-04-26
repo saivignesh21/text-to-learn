@@ -15,6 +15,7 @@ const aiRoutes = require("./routes/aiRoutes");
 const enrichmentRoutes = require("./routes/enrichment"); // NEW: Milestones 9, 10, 11
 const debugRoutes = require("./routes/debugRoutes"); // 🆕 DEBUG ROUTES
 const quizRoutes = require("./routes/quizRoutes");
+const progressRoutes = require("./routes/progressRoutes"); // 🆕 GAMIFICATION
 // Connect to MongoDB
 connectDB();
 
@@ -87,8 +88,8 @@ app.use("/api/modules", moduleRoutes);
 app.use("/api/lessons", lessonRoutes);
 app.use("/api/enrichment", enrichmentRoutes); // NEW: Milestones 9, 10, 11
 app.use("/api/debug", debugRoutes); // 🆕 DEBUG ROUTES - FOR TESTING ONLY
-app.use("/api/quiz", quizRoutes); // 🆕 QUIZ ROUTES 
 app.use("/api/quiz", quizRoutes);
+app.use("/api/progress", progressRoutes); // 🆕 GAMIFICATION ROUTES
 // ==================== DEBUG INFO ====================
 
 console.log("📋 Configuration loaded:");

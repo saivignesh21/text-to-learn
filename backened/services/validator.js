@@ -172,6 +172,24 @@ function sanitizeContentBlock(block, blockIndex) {
     };
   }
 
+  if (blockType === "flashcards") {
+    const cards = Array.isArray(block.cards) ? block.cards : [];
+    const sanitizedCards = cards.map(c => ({
+      front: String(c.front || "").trim().substring(0, 200),
+      back: String(c.back || "").trim().substring(0, 500)
+    })).filter(c => c.front && c.back);
+
+    if (sanitizedCards.length === 0) {
+      console.warn(`⚠️  Flashcards Block ${blockIndex}: Empty or invalid cards`);
+      return null;
+    }
+
+    return {
+      type: "flashcards",
+      cards: sanitizedCards
+    };
+  }
+
   console.warn(`⚠️  Block ${blockIndex}: Unknown type "${blockType}"`);
   return null;
 }

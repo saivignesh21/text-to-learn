@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ChevronDown, BookOpen, Clock, Zap } from "lucide-react";
 import { getLessonById } from "../utils/api";
+import CourseMindMap from "./CourseMindMap";
 import "./CoursePreview.css";
 
 const CoursePreview = ({ course, onLessonSelect }) => {
@@ -99,6 +100,9 @@ const CoursePreview = ({ course, onLessonSelect }) => {
           </div>
         </div>
       </div>
+
+      {/* Visual Mind Map */}
+      <CourseMindMap course={course} />
 
       {/* Modules List */}
       <div className="course-modules-container">
