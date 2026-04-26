@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { scrollToTop } from "../utils/scrollToTop";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   ArrowLeft,
@@ -14,7 +15,6 @@ import LessonRenderer from "../components/LessonRenderer";
 import "./Course.css";
 
 const CoursePage = ({ course = null, onBack }) => {
-  // 🔧 FIX: Use correct Auth0 hook
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   
   const [selectedLesson, setSelectedLesson] = useState(null);
@@ -41,7 +41,6 @@ const CoursePage = ({ course = null, onBack }) => {
     );
   }
 
-  // 🔧 FIX: Handle save course with correct Auth0
   const handleSaveCourse = async () => {
     if (!isAuthenticated) {
       alert("Please login to save courses");
@@ -52,13 +51,7 @@ const CoursePage = ({ course = null, onBack }) => {
     setCourseError(null);
 
     try {
-      // 🔧 FIX: Get token using getAccessTokenSilently
       const token = await getAccessTokenSilently();
-
-      console.log("💾 Saving course:", {
-        title: course.title,
-        modules: course.modules?.length || 0,
-      });
 
       const courseData = {
         title: course.title,
@@ -81,13 +74,6 @@ const CoursePage = ({ course = null, onBack }) => {
   };
 
   const handleLessonSelect = (data) => {
-    console.log("📖 Lesson selected:", {
-      lesson: data.lesson.title,
-      module: data.module.title,
-      moduleIdx: data.moduleIdx,
-      lessonIdx: data.lessonIdx,
-    });
-
     setSelectedLesson(data.lesson);
     setSelectedModule(data.module);
     setModuleIdx(data.moduleIdx || 0);
@@ -99,95 +85,52 @@ const CoursePage = ({ course = null, onBack }) => {
     setSelectedModule(null);
   };
 
-  // 🔧 FIXED: Navigate to next lesson
   const handleNextLesson = () => {
-    if (!selectedModule || !selectedLesson || !course) {
-      console.warn("Missing data for next lesson");
-      return;
-    }
+    if (!selectedModule || !selectedLesson || !course) return;
 
-    console.log("📍 Current position:", {
-      moduleIdx,
-      lessonIdx,
-      totalLessonsInModule: selectedModule.lessons?.length || 0,
-      totalModules: course.modules?.length || 0,
-    });
-
-    // Check if there's a next lesson in current module
     if (lessonIdx < selectedModule.lessons.length - 1) {
-      const nextLesson = selectedModule.lessons[lessonIdx + 1];
-      console.log("➡️ Moving to next lesson in same module:", nextLesson.title);
-      setSelectedLesson(nextLesson);
+      setSelectedLesson(selectedModule.lessons[lessonIdx + 1]);
       setLessonIdx(lessonIdx + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-    // Check if there's a next module
-    else if (moduleIdx < course.modules.length - 1) {
+      scrollToTop();
+    } else if (moduleIdx < course.modules.length - 1) {
       const nextModule = course.modules[moduleIdx + 1];
       const firstLesson = nextModule.lessons?.[0];
       if (firstLesson) {
-        console.log(
-          "📚 Moving to first lesson in next module:",
-          firstLesson.title
-        );
         setSelectedModule(nextModule);
         setSelectedLesson(firstLesson);
         setModuleIdx(moduleIdx + 1);
         setLessonIdx(0);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        scrollToTop();
       }
     } else {
-      console.log("🎉 End of course reached");
       alert("🎉 You've reached the end of the course!");
     }
   };
 
-  // 🔧 FIXED: Navigate to previous lesson
   const handlePreviousLesson = () => {
-    if (!selectedModule || !selectedLesson || !course) {
-      console.warn("Missing data for previous lesson");
-      return;
-    }
+    if (!selectedModule || !selectedLesson || !course) return;
 
-    console.log("📍 Current position:", {
-      moduleIdx,
-      lessonIdx,
-    });
-
-    // Check if there's a previous lesson in current module
     if (lessonIdx > 0) {
-      const prevLesson = selectedModule.lessons[lessonIdx - 1];
-      console.log("⬅️ Moving to previous lesson in same module:", prevLesson.title);
-      setSelectedLesson(prevLesson);
+      setSelectedLesson(selectedModule.lessons[lessonIdx - 1]);
       setLessonIdx(lessonIdx - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-    // Check if there's a previous module
-    else if (moduleIdx > 0) {
+      scrollToTop();
+    } else if (moduleIdx > 0) {
       const prevModule = course.modules[moduleIdx - 1];
       const lastLesson = prevModule.lessons?.[prevModule.lessons.length - 1];
       if (lastLesson) {
-        console.log(
-          "📚 Moving to last lesson in previous module:",
-          lastLesson.title
-        );
         setSelectedModule(prevModule);
         setSelectedLesson(lastLesson);
         setModuleIdx(moduleIdx - 1);
         setLessonIdx(prevModule.lessons.length - 1);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        scrollToTop();
       }
-    } else {
-      console.log("Already at first lesson");
     }
   };
 
-  // Calculate total lessons in current module
   const getTotalLessonsInModule = () => {
     return selectedModule?.lessons?.length || 1;
   };
 
-  // If lesson is selected, show lesson renderer
   if (selectedLesson) {
     return (
       <div className="course-page-container">
@@ -212,7 +155,6 @@ const CoursePage = ({ course = null, onBack }) => {
     );
   }
 
-  // Otherwise show course preview
   return (
     <div className="course-page-container">
       <div className="course-page-header-bar">
@@ -229,18 +171,11 @@ const CoursePage = ({ course = null, onBack }) => {
           )}
         </div>
 
-        {/* 🔧 Save Course Button */}
         <button
           onClick={handleSaveCourse}
           disabled={isSavingCourse || courseSaved}
           className={`save-course-btn ${courseSaved ? "saved" : ""}`}
-          title={
-            isSavingCourse
-              ? "Saving..."
-              : courseSaved
-              ? "Saved!"
-              : "Save entire course"
-          }
+          title={isSavingCourse ? "Saving..." : courseSaved ? "Saved!" : "Save entire course"}
         >
           {courseSaved ? (
             <>
@@ -263,11 +198,7 @@ const CoursePage = ({ course = null, onBack }) => {
           <div className="stat">
             <Clock size={16} />
             <span>
-              {course.modules?.reduce(
-                (sum, m) => sum + (m.lessons?.length || 0),
-                0
-              ) || 0}{" "}
-              Lessons
+              {course.modules?.reduce((sum, m) => sum + (m.lessons?.length || 0), 0) || 0} Lessons
             </span>
           </div>
           <div className="stat">
@@ -283,11 +214,3 @@ const CoursePage = ({ course = null, onBack }) => {
 };
 
 export default CoursePage;
-
-
-
-
-
-
-
-

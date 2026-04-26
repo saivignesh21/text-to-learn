@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { scrollToTop as scrollContentToTop } from "../utils/scrollToTop";
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,7 +14,6 @@ import {
   markLessonComplete,
 } from "../utils/api";
 
-// Import all block components
 import HeadingBlock from "./blocks/HeadingBlock";
 import ParagraphBlock from "./blocks/ParagraphBlock";
 import CodeBlock from "./blocks/CodeBlock";
@@ -52,10 +52,9 @@ const LessonRenderer = ({
   const [saveError, setSaveError] = useState(null);
   const containerRef = useRef(null);
   const prevLessonIdRef = useRef(null);
-  
+
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
-  // Use lesson prop first, fallback to component props
   const lessonData = useMemo(() => lesson || {}, [lesson]);
   const lessonObjectives = useMemo(
     () => lessonData.objectives || objectives,
@@ -66,77 +65,46 @@ const LessonRenderer = ({
     [lessonData.content, content]
   );
 
-  // 🔧 STEP 1: Disable browser scroll restoration on mount
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
   }, []);
 
-  // 🔧 STEP 2: Enhanced scroll to top function with container focus
+  // Fixed: scroll the actual content container, not window
   const scrollToTopImmediate = () => {
-    // Method 1: window.scrollTo
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'auto' // Use 'auto' for immediate scroll
-    });
-
-    // Method 2: document element
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-
-    // Method 3: Focus on container if it exists
+    scrollContentToTop("auto");
     if (containerRef.current) {
-      containerRef.current.scrollIntoView({ behavior: 'auto', block: 'start' });
-      containerRef.current.focus({ preventScroll: false });
+      containerRef.current.scrollIntoView({ behavior: "auto", block: "start" });
     }
-
-    // Method 4: Verify with setTimeout
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    }, 0);
-
-    // Method 5: Another verification after render
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 100);
   };
 
-  // 🔧 STEP 3: Watch for lesson changes and scroll to top
+  // Watch for lesson changes and scroll to top
   useEffect(() => {
     const currentLessonId = lessonData?._id;
-    
-    // If lesson ID changed, scroll to top
     if (currentLessonId && currentLessonId !== prevLessonIdRef.current) {
-      console.log(`📚 Lesson changed: ${currentLessonId}`);
       prevLessonIdRef.current = currentLessonId;
-      
-      // Reset saved state
       setIsSaved(false);
-      
-      // Scroll to top immediately
       scrollToTopImmediate();
     }
   }, [lessonData?._id]);
 
-  // Detect scroll for scroll-to-top button
+  // Fixed: watch the correct scrollable container for scroll-to-top button
   useEffect(() => {
+    const container = document.querySelector(".app-main-content");
+    const target = container || window;
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300);
+      const scrollY = container ? container.scrollTop : window.scrollY;
+      setShowScrollTop(scrollY > 300);
     };
-    
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    target.addEventListener("scroll", handleScroll);
+    return () => target.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToTop = () => {
     scrollToTopImmediate();
   };
 
-  // Handle save lesson
   const handleSaveLesson = async () => {
     if (!isAuthenticated) {
       alert("Please login to save lessons");
@@ -148,12 +116,6 @@ const LessonRenderer = ({
 
     try {
       const token = await getAccessTokenSilently();
-
-      console.log("💾 Saving lesson:", {
-        title: lessonData.title,
-        course: course?.title,
-        module: module?.title,
-      });
 
       const result = await saveLessonWithContext(
         lessonData,
@@ -168,14 +130,12 @@ const LessonRenderer = ({
       try {
         if (lessonData._id) {
           await markLessonComplete(lessonData._id, token);
-          console.log("✅ Lesson marked as complete");
         }
       } catch (progressErr) {
         console.warn("Could not mark lesson as complete:", progressErr);
       }
 
       onLessonSaved(lessonData);
-
       setTimeout(() => setIsSaved(false), 2000);
     } catch (err) {
       console.error("❌ Error saving lesson:", err);
@@ -186,14 +146,11 @@ const LessonRenderer = ({
     }
   };
 
-  // Handle share
   const handleShare = () => {
     alert("Share feature coming soon!");
   };
 
-  // Navigation handlers
   const handlePreviousClick = () => {
-    console.log("⬅️ Previous button clicked");
     scrollToTopImmediate();
     if (onPrevious && typeof onPrevious === "function") {
       onPrevious();
@@ -201,20 +158,17 @@ const LessonRenderer = ({
   };
 
   const handleNextClick = () => {
-    console.log("➡️ Next button clicked");
     scrollToTopImmediate();
     if (onNext && typeof onNext === "function") {
       onNext();
     }
   };
 
-  // Check if we can navigate
   const canGoPrevious = lessonIdx > 0;
   const canGoNext = lessonIdx < totalLessons - 1;
 
   return (
     <div className="lesson-renderer-container" ref={containerRef}>
-      {/* Lesson Header */}
       <header className="lesson-header">
         <div className="lesson-header-content">
           <div className="lesson-breadcrumb">
@@ -237,21 +191,12 @@ const LessonRenderer = ({
 
           <h1 className="lesson-title">{lessonData.title}</h1>
 
-          {/* Lesson Actions */}
           <div className="lesson-header-actions">
             <button
               onClick={handleSaveLesson}
               disabled={isSaving || isSaved}
-              className={`action-btn ${isSaved ? "saved" : ""} ${
-                isSaving ? "loading" : ""
-              }`}
-              title={
-                isSaving
-                  ? "Saving..."
-                  : isSaved
-                  ? "Saved!"
-                  : "Save this lesson"
-              }
+              className={`action-btn ${isSaved ? "saved" : ""} ${isSaving ? "loading" : ""}`}
+              title={isSaving ? "Saving..." : isSaved ? "Saved!" : "Save this lesson"}
             >
               {isSaved ? (
                 <>
@@ -275,11 +220,7 @@ const LessonRenderer = ({
               lessonId={lessonData._id}
             />
 
-            <button
-              onClick={handleShare}
-              className="action-btn"
-              title="Share lesson"
-            >
+            <button onClick={handleShare} className="action-btn" title="Share lesson">
               <Share2 size={18} />
               <span>Share</span>
             </button>
@@ -291,9 +232,7 @@ const LessonRenderer = ({
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="lesson-main-content">
-        {/* Objectives Section */}
         {lessonObjectives && lessonObjectives.length > 0 && (
           <section className="objectives-section">
             <h2 className="section-title">📚 What You'll Learn</h2>
@@ -308,12 +247,10 @@ const LessonRenderer = ({
           </section>
         )}
 
-        {/* Hinglish Translation Section */}
         <section className="hinglish-section">
           <HinglishTranslator lesson={lessonData} />
         </section>
 
-        {/* Content Blocks */}
         <section className="content-section">
           {lessonContent && lessonContent.length > 0 ? (
             <div className="lesson-content">
@@ -323,7 +260,6 @@ const LessonRenderer = ({
                     <p>Block Type: {block.type}</p>
                   </div>
                 ));
-
                 return <BlockComponent key={idx} {...block} />;
               })}
             </div>
@@ -335,10 +271,8 @@ const LessonRenderer = ({
         </section>
       </main>
 
-      {/* Navigation Footer */}
       <footer className="lesson-footer">
         <div className="lesson-navigation">
-          {/* Previous Button */}
           <button
             onClick={handlePreviousClick}
             disabled={!canGoPrevious}
@@ -349,7 +283,6 @@ const LessonRenderer = ({
             <span>Previous</span>
           </button>
 
-          {/* Progress Indicator */}
           <div className="lesson-progress">
             <span className="progress-text">
               Lesson {lessonIdx + 1} of {totalLessons}
@@ -362,7 +295,6 @@ const LessonRenderer = ({
             </div>
           </div>
 
-          {/* Next Button */}
           <button
             onClick={handleNextClick}
             disabled={!canGoNext}
@@ -375,7 +307,6 @@ const LessonRenderer = ({
         </div>
       </footer>
 
-      {/* Scroll to Top Button */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}

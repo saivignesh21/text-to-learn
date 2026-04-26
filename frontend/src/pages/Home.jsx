@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Sparkles, Loader, Save, Check, X, AlertCircle } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { scrollToTop } from '../utils/scrollToTop';
 import ChatPrompt from '../components/ChatPrompt';
 import CoursePreview from '../components/CoursePreview';
 import LessonRenderer from '../components/LessonRenderer';
@@ -28,37 +29,24 @@ const Home = ({
   const navigate = useNavigate();
   const prevLessonIdRef = useRef(null);
 
-  // Show notification
   const showNotification = useCallback((message, type = 'info') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 4000);
   }, []);
 
-  // Disable browser scroll restoration
   useEffect(() => {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
   }, []);
 
-  // FIXED: Track lesson changes and reset scroll
+  // Fixed: scroll the actual content container, not window
   useEffect(() => {
     const currentLessonId = activeLesson?.lesson?._id || activeLesson?._id;
-    
-    if (currentLessonId && currentLessonId !== prevLessonIdRef.current) {
-      console.log(`🔧 Home - Lesson changed: ${currentLessonId}`);
-      prevLessonIdRef.current = currentLessonId;
-      
-      // Reset scroll to top when lesson changes
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
 
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-      }, 0);
+    if (currentLessonId && currentLessonId !== prevLessonIdRef.current) {
+      prevLessonIdRef.current = currentLessonId;
+      scrollToTop("auto");
     }
   }, [activeLesson]);
 
@@ -69,8 +57,6 @@ const Home = ({
         setIsGenerating(false);
         return;
       }
-
-      console.log('✅ Home - Course generated:', generatedCourse.title);
       onCourseGenerated(generatedCourse);
       setIsGenerating(false);
       setSaved(false);
@@ -114,11 +100,7 @@ const Home = ({
   }, [isAuthenticated, activeCourse, onSaveCourse, getAccessTokenSilently, showNotification]);
 
   const getTotalLessons = useCallback(() => {
-    // FIXED: Handle profile lessons that don't have modules
-    if (isViewingProfileLesson && activeLesson) {
-      return 1; // Profile lessons are viewed as single lessons
-    }
-    
+    if (isViewingProfileLesson && activeLesson) return 1;
     if (!activeCourse || !activeCourse.modules) return 0;
     return activeCourse.modules.reduce((total, module) => {
       return total + (module.lessons?.length || 0);
@@ -126,25 +108,17 @@ const Home = ({
   }, [activeCourse, isViewingProfileLesson, activeLesson]);
 
   const getCurrentLessonIndex = useCallback(() => {
-    // FIXED: Handle profile lessons
-    if (isViewingProfileLesson && activeLesson) {
-      return 0; // Profile lessons are always at index 0
-    }
-
+    if (isViewingProfileLesson && activeLesson) return 0;
     if (!activeLesson || !activeCourse || !activeCourse.modules) return 0;
 
     let currentIndex = 0;
     for (let modIdx = 0; modIdx < activeCourse.modules.length; modIdx++) {
       const module = activeCourse.modules[modIdx];
       if (!module.lessons) continue;
-
       for (let lesIdx = 0; lesIdx < module.lessons.length; lesIdx++) {
         const lessonId = module.lessons[lesIdx]._id;
         const activeLessonId = activeLesson.lesson?._id || activeLesson._id;
-
-        if (lessonId === activeLessonId) {
-          return currentIndex;
-        }
+        if (lessonId === activeLessonId) return currentIndex;
         currentIndex++;
       }
     }
@@ -158,7 +132,6 @@ const Home = ({
     for (let modIdx = 0; modIdx < activeCourse.modules.length; modIdx++) {
       const module = activeCourse.modules[modIdx];
       if (!module.lessons) continue;
-
       for (let lesIdx = 0; lesIdx < module.lessons.length; lesIdx++) {
         if (currentIndex === globalIndex) {
           return {
@@ -176,13 +149,7 @@ const Home = ({
 
   const handleLessonSelection = useCallback((lessonData) => {
     try {
-      if (isViewingProfileLesson) {
-        console.log('🔒 LOCKED: Cannot select lesson while viewing profile lesson');
-        return;
-      }
-
-      console.log('✅ Home - Lesson selected from preview');
-
+      if (isViewingProfileLesson) return;
       if (lessonData && lessonData.lesson) {
         onSelectLesson(lessonData);
       }
@@ -194,14 +161,10 @@ const Home = ({
 
   const handlePreviousLesson = useCallback(() => {
     try {
-      console.log('✅ Home - Previous lesson');
-
       const currentIndex = getCurrentLessonIndex();
       if (currentIndex > 0) {
         const previousLesson = getLessonByIndex(currentIndex - 1);
-        if (previousLesson) {
-          onSelectLesson(previousLesson);
-        }
+        if (previousLesson) onSelectLesson(previousLesson);
       }
     } catch (error) {
       console.error('❌ Error navigating to previous lesson:', error);
@@ -211,16 +174,11 @@ const Home = ({
 
   const handleNextLesson = useCallback(() => {
     try {
-      console.log('✅ Home - Next lesson');
-
       const currentIndex = getCurrentLessonIndex();
       const totalLessons = getTotalLessons();
-
       if (currentIndex < totalLessons - 1) {
         const nextLesson = getLessonByIndex(currentIndex + 1);
-        if (nextLesson) {
-          onSelectLesson(nextLesson);
-        }
+        if (nextLesson) onSelectLesson(nextLesson);
       }
     } catch (error) {
       console.error('❌ Error navigating to next lesson:', error);
@@ -230,14 +188,8 @@ const Home = ({
 
   const handleBackToCourse = useCallback(() => {
     try {
-      if (isViewingProfileLesson) {
-        console.log('🔒 LOCKED: Cannot go back while viewing profile lesson');
-        return;
-      }
-
-      console.log('🔙 Home - Going back to course');
+      if (isViewingProfileLesson) return;
       onBackToCourse();
-      
       if (location.state?.returnPath === "/profile") {
         navigate("/profile");
       }
@@ -249,10 +201,7 @@ const Home = ({
 
   const handleCloseProfileLesson = useCallback(() => {
     try {
-      console.log('✅ Home - Closing profile lesson');
-      if (onCloseProfileLesson) {
-        onCloseProfileLesson();
-      }
+      if (onCloseProfileLesson) onCloseProfileLesson();
     } catch (error) {
       console.error('❌ Error closing profile lesson:', error);
     }
@@ -260,7 +209,6 @@ const Home = ({
 
   const handleNewCourse = useCallback(() => {
     try {
-      console.log('🆕 Home - Starting new course');
       onNewCourse();
       showNotification('Starting new course...', 'info');
     } catch (error) {
@@ -269,21 +217,16 @@ const Home = ({
     }
   }, [onNewCourse, showNotification]);
 
-  // FIXED: Handle profile lessons and regular course lessons
   function renderContent() {
-    // Show lesson content when activeLesson exists (works for both profile lessons and course lessons)
     if (activeLesson) {
       const currentIndex = getCurrentLessonIndex();
       const totalLessons = getTotalLessons();
-      
-      // FIXED: Get lesson data - profile lessons have different structure
       const lessonData = activeLesson.lesson || activeLesson;
       const moduleData = activeLesson.module || { title: 'Module' };
       const courseData = activeLesson.course || activeCourse || { title: 'Course' };
 
       return (
         <div className="home-lesson-view">
-          {/* Simple close button for profile lessons */}
           {isViewingProfileLesson && (
             <button
               onClick={handleCloseProfileLesson}
@@ -294,7 +237,7 @@ const Home = ({
               <span>Close</span>
             </button>
           )}
-          
+
           <LessonRenderer
             key={`lesson-${lessonData._id}`}
             lesson={lessonData}
@@ -311,12 +254,11 @@ const Home = ({
       );
     }
 
-    // Show course preview when activeCourse exists but activeLesson is null
     if (activeCourse) {
       return (
         <div className="home-course-view">
           <div className="course-actions">
-            <button 
+            <button
               onClick={handleNewCourse}
               className="new-course-action-btn"
               disabled={isViewingProfileLesson}
@@ -361,7 +303,6 @@ const Home = ({
       );
     }
 
-    // Show home page (empty state)
     return (
       <div className="home-container">
         <header className="home-header">
@@ -403,7 +344,6 @@ const Home = ({
     );
   }
 
-  // Render with notifications
   return (
     <>
       {notification && (

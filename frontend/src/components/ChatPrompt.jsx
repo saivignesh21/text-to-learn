@@ -16,7 +16,6 @@ const ChatPrompt = ({
   const textareaRef = useRef(null);
   const { getAccessToken, isAuthenticated } = useAuth0();
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -27,7 +26,6 @@ const ChatPrompt = ({
     }
   }, [prompt]);
 
-  // Log component mount and API URL
   useEffect(() => {
     console.log("ChatPrompt mounted");
     console.log("API URL:", process.env.REACT_APP_API_URL || "DEFAULT: http://localhost:5000/api");
@@ -36,12 +34,8 @@ const ChatPrompt = ({
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
 
-    console.log("========== SUBMIT STARTED ==========");
-    console.log("Prompt:", prompt);
-
     if (!prompt.trim()) {
       setError("Please enter a topic to generate a course");
-      console.warn("Prompt is empty");
       return;
     }
 
@@ -50,58 +44,30 @@ const ChatPrompt = ({
     onGenerationStart?.();
 
     try {
-      // Get access token if authenticated
       let token = null;
       if (isAuthenticated) {
         try {
-          console.log("Getting Auth0 token...");
           token = await getAccessToken();
-          console.log("Token obtained:", token ? "YES (length: " + token.length + ")" : "NO");
         } catch (tokenError) {
           console.warn("Failed to get access token:", tokenError.message);
         }
-      } else {
-        console.log("Not authenticated, proceeding without token");
       }
 
-      console.log("Calling generateCourseAI with:");
-      console.log("  - Topic:", prompt.trim());
-      console.log("  - Has Token:", !!token);
-
-      // Call your existing API function
       const response = await generateCourseAI(prompt.trim(), token);
-
-      console.log("Raw API Response:", response);
-
-      // IMPORTANT: Backend wraps response in { success, message, data }
-      // Extract the actual course data from the response
       const courseData = response?.data || response;
 
       if (!courseData) {
         throw new Error("No course returned. Please try again.");
       }
 
-      console.log("Extracted course data:", courseData);
-      console.log("Course title:", courseData.title);
-      console.log("Modules:", courseData.modules);
-
-      // Clear input on success
       setPrompt("");
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
 
-      // Call parent callback with the extracted course data
       onResponse?.(courseData);
-      console.log("========== SUBMIT SUCCESS ==========");
-      
     } catch (err) {
-      console.error("========== SUBMIT ERROR ==========");
-      console.error("Error message:", err.message);
-      console.error("Full error:", err);
-      
-      const errorMessage =
-        err.message || "Error fetching AI response. Please try again.";
+      const errorMessage = err.message || "Error fetching AI response. Please try again.";
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {
@@ -109,7 +75,6 @@ const ChatPrompt = ({
     }
   };
 
-  // Enter to submit, Shift+Enter for newline
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -128,7 +93,6 @@ const ChatPrompt = ({
   return (
     <div className="chat-prompt-wrapper">
       <form onSubmit={handleSubmit} className="chat-prompt-form">
-        {/* Error Display */}
         {error && (
           <div className="prompt-error-banner">
             <AlertCircle size={18} />
@@ -143,7 +107,6 @@ const ChatPrompt = ({
           </div>
         )}
 
-        {/* Main Input Container */}
         <div className="prompt-input-container">
           <textarea
             ref={textareaRef}
@@ -161,27 +124,22 @@ const ChatPrompt = ({
             type="submit"
             disabled={isSubmitDisabled}
             className="prompt-submit-btn"
-            title={
-              loading || isGenerating
-                ? "Generating course..."
-                : "Generate course (Enter)"
-            }
+            title={loading || isGenerating ? "Generating course..." : "Generate course (Enter)"}
           >
             {loading || isGenerating ? (
               <>
                 <Loader size={20} className="spinner-icon" />
-                <span className="hidden sm:inline">Generating...</span>
+                <span>Generating...</span>
               </>
             ) : (
               <>
                 <Send size={20} />
-                <span className="hidden sm:inline">Generate</span>
+                <span>Generate</span>
               </>
             )}
           </button>
         </div>
 
-        {/* Helper Text */}
         {!loading && !isGenerating && (
           <div className="prompt-helper-text">
             <span className="helper-icon">
@@ -198,6 +156,3 @@ const ChatPrompt = ({
 };
 
 export default ChatPrompt;
-
-
-
