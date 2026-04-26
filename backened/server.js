@@ -53,10 +53,10 @@ app.use(
 );
 
 // Parse JSON requests
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
 // Parse URL-encoded requests
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // ==================== HEALTH CHECK ====================
 
