@@ -472,10 +472,61 @@ async function generatePathsHandler(req, res, next) {
   }
 }
 
+/**
+ * Generate cross-disciplinary connections between lessons
+ * POST /api/ai/discover-connections
+ */
+async function discoverConnectionsHandler(req, res, next) {
+  try {
+    const { lessons } = req.body;
+
+    if (!lessons || !Array.isArray(lessons) || lessons.length === 0) {
+      return res.status(400).json({
+        message: "lessons array is required",
+        error: "MISSING_FIELDS",
+      });
+    }
+
+    const { GoogleGenerativeAI } = require("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
+    const { discoverConnectionsPrompt } = require("../services/promptTemplates");
+    const prompt = discoverConnectionsPrompt(lessons);
+
+    const result = await model.generateContent(prompt);
+    let text = result.response.text();
+    
+    if (text.startsWith("\`\`\`json")) {
+      text = text.replace(/^\`\`\`json\s*/, "").replace(/\`\`\`\s*$/, "");
+    } else if (text.startsWith("\`\`\`")) {
+      text = text.replace(/^\`\`\`\s*/, "").replace(/\`\`\`\s*$/, "");
+    }
+    
+    const parsedConnections = JSON.parse(text);
+
+    res.status(200).json({
+      success: true,
+      data: parsedConnections
+    });
+  } catch (err) {
+    console.error("🔥 ERROR in discoverConnectionsHandler:", err);
+    res.status(500).json({
+      success: false,
+      message: "Error generating connections",
+      error: err.message,
+    });
+  }
+}
+
 module.exports = {
   generateCourseHandler,
   generateLessonHandler,
   studyBuddyHandler,
   feynmanHandler,
   generatePathsHandler,
+  discoverConnectionsHandler,
 };

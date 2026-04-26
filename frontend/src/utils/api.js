@@ -534,6 +534,15 @@ export const generateAdaptivePaths = async (courseTitle, lessonTitle, token = nu
   );
 };
 
+export const discoverConnections = async (lessons, token = null) => {
+  return await apiRequest(
+    "/ai/discover-connections",
+    "POST",
+    { lessons },
+    token
+  );
+};
+
 // ==================== EXPORT FOR TESTING ====================
 
 const apiExports = {
@@ -542,6 +551,7 @@ const apiExports = {
   askStudyBuddy,
   submitFeynmanExplanation,
   generateAdaptivePaths,
+  discoverConnections,
   getAllCourses,
   getCourseById,
   getUserCourses,

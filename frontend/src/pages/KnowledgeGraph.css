@@ -1,0 +1,196 @@
+.knowledge-graph-container {
+  width: 100%;
+  height: calc(100vh - 64px); /* Subtract Navbar height */
+  position: relative;
+  background-color: var(--background, #0f172a);
+  overflow: hidden;
+}
+
+.kg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.kg-header {
+  pointer-events: auto;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  max-width: 600px;
+}
+
+.kg-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary, #f8fafc);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kg-header p {
+  margin: 0;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 1rem;
+}
+
+.kg-controls {
+  pointer-events: auto;
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.kg-ai-btn {
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.kg-ai-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.kg-ai-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.kg-panel {
+  pointer-events: auto;
+  position: absolute;
+  right: 2rem;
+  bottom: 2rem;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 16px;
+  width: 350px;
+  max-height: 60vh;
+  overflow-y: auto;
+  transform: translateX(150%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kg-panel.open {
+  transform: translateX(0);
+}
+
+.kg-panel h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-primary, #f8fafc);
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kg-panel-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kg-panel-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.kg-panel-content {
+  color: var(--text-secondary, #cbd5e1);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.kg-panel-content .badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kg-panel-content .badge.course { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.kg-panel-content .badge.module { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+.kg-panel-content .badge.lesson { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+.kg-panel-content .badge.ai-link { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+.kg-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-primary, #f8fafc);
+  z-index: 20;
+}
+
+.kg-loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pulse-anim {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Custom scrollbar for panel */
+.kg-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.kg-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+.kg-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+.kg-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

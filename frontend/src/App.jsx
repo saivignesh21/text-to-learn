@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import QuizGenerator from './pages/QuizGenerator';
+import KnowledgeGraph from './pages/KnowledgeGraph';
 import { getCourseById } from './utils/api';
 import './Appp.css';
 
@@ -297,6 +298,10 @@ function App() {
             <Route
               path="quiz"
               element={<QuizGenerator />}
+            />
+            <Route
+              path="knowledge-graph"
+              element={<KnowledgeGraph />}
             />
           </Route>
         </Routes>

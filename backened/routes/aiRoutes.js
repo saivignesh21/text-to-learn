@@ -8,6 +8,7 @@ const {
   studyBuddyHandler,
   feynmanHandler,
   generatePathsHandler,
+  discoverConnectionsHandler,
 } = require("../controllers/aiController");
 
 /**
@@ -50,6 +51,15 @@ router.post("/feynman", async (req, res, next) => {
  */
 router.post("/generate-paths", async (req, res, next) => {
   await generatePathsHandler(req, res, next);
+});
+
+/**
+ * POST /api/ai/discover-connections
+ * Discover cross-course connections
+ */
+router.post("/discover-connections", async (req, res, next) => {
+  console.log("\n🔵 [AI Routes] POST /api/ai/discover-connections");
+  await discoverConnectionsHandler(req, res, next);
 });
 
 module.exports = router;

@@ -1188,3 +1188,29 @@ Respond ONLY with a VALID JSON array of objects in the following format:
 
 OUTPUT ONLY RAW JSON. START WITH [ END WITH ]`;
 };
+
+/**
+ * Generate a prompt to discover cross-disciplinary connections between lessons.
+ */
+exports.discoverConnectionsPrompt = (lessons) => {
+  return `You are a brilliant polymath and curriculum designer. 
+You are given a list of lesson titles that a student has studied across different courses.
+Your job is to find deep, interesting, or surprising conceptual connections between these completely different lessons.
+
+Here is the list of lessons, formatted as ID: Title:
+${lessons.map(l => `${l.id}: ${l.title}`).join('\n')}
+
+Identify between 2 to 5 strong connections. A connection must link TWO DIFFERENT lessons.
+For each connection, provide a short, mind-blowing explanation of WHY they connect.
+
+Respond ONLY with a VALID JSON array in the following format:
+[
+  {
+    "sourceId": "id_of_first_lesson",
+    "targetId": "id_of_second_lesson",
+    "reason": "A 1-2 sentence explanation of the fascinating overlap between these concepts."
+  }
+]
+
+OUTPUT ONLY RAW JSON. START WITH [ END WITH ]`;
+};

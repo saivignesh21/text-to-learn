@@ -204,6 +204,13 @@ exports.getUserCourses = async (req, res, next) => {
 
     const courses = await Course.find({ creator: userId })
       .select("title description tags createdAt updatedAt modules")
+      .populate({
+        path: "modules",
+        populate: {
+          path: "lessons",
+          select: "title"
+        }
+      })
       .lean();
 
     console.log(`✅ Found ${courses.length} courses`);

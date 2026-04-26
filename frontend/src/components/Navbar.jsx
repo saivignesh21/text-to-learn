@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Menu, X, BookOpen, ChevronDown, Zap } from "lucide-react";
+import { Menu, X, BookOpen, ChevronDown, Zap, Network } from "lucide-react";
 import GamificationBadge from "./GamificationBadge";
 import "./Navbar.css";
 
@@ -83,6 +83,11 @@ const Navbar = () => {
               {/* Quiz link */}
               <Link to="/quiz" className="navbar-quiz-link">
                 <Zap size={14} /> Quiz
+              </Link>
+              
+              {/* Knowledge Graph link */}
+              <Link to="/knowledge-graph" className="navbar-quiz-link" style={{ marginLeft: '12px' }}>
+                <Network size={14} /> Second Brain
               </Link>
 
               {/* User Greeting (Desktop) */}
@@ -181,6 +186,14 @@ const Navbar = () => {
               </div>
 
               <div className="mobile-menu-divider"></div>
+              
+              <Link
+                to="/knowledge-graph"
+                className="mobile-menu-item"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                🧠 Second Brain
+              </Link>
 
               <Link
                 to="/profile"

@@ -18,6 +18,8 @@ const Layout = ({
 }) => {
   const location = useLocation();
   const isQuizPage = location.pathname === '/quiz';
+  const isKgPage = location.pathname === '/knowledge-graph';
+  const hideSidebar = isQuizPage || isKgPage;
 
   const getNotificationIcon = (type) => {
     switch (type) {
@@ -47,8 +49,8 @@ const Layout = ({
 
       {/* Main Container */}
       <div className="app-container">
-        {/* Sidebar - Hidden on quiz page */}
-        {!isQuizPage && <Sidebar
+        {/* Sidebar - Hidden on specific pages */}
+        {!hideSidebar && <Sidebar
           courses={courses}
           activeCourse={activeCourse}
           activeLesson={activeLesson}
