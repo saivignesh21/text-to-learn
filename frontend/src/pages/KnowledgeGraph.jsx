@@ -8,6 +8,7 @@ import './KnowledgeGraph.css';
 const KnowledgeGraph = () => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
+  const [rawCourses, setRawCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDiscovering, setIsDiscovering] = useState(false);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -35,8 +36,6 @@ const KnowledgeGraph = () => {
 
         const nodes = [];
         const links = [];
-        
-        console.log("DEBUG KNOWLEDGE GRAPH COURSES:", courses);
         
         // Root Node (The "Second Brain")
         nodes.push({
@@ -83,30 +82,13 @@ const KnowledgeGraph = () => {
                 type: 'standard'
               });
 
-              if (module.lessons) {
-                module.lessons.forEach(lesson => {
-                  const lessonId = `lesson_${lesson._id}`;
-                  nodes.push({
-                    id: lessonId,
-                    dbId: lesson._id, // Keep raw DB ID for AI processing
-                    name: lesson.title,
-                    val: 5,
-                    color: COLORS.lesson,
-                    type: 'lesson',
-                    desc: 'A specific lesson you learned in this module.'
-                  });
-                  links.push({
-                    source: moduleId,
-                    target: lessonId,
-                    color: 'rgba(255,255,255,0.2)',
-                    type: 'standard'
-                  });
-                });
-              }
+              // WE INTENTIONALLY OMIT LESSONS TO KEEP THE GRAPH CLEAN 
+              // AND RESEMBLING THE "INITIAL" STATE YOU LIKED
             });
           }
         });
 
+        setRawCourses(courses);
         setGraphData({ nodes, links });
       } catch (err) {
         console.error("Error building graph:", err);
@@ -126,33 +108,61 @@ const KnowledgeGraph = () => {
     try {
       const token = await getAccessTokenSilently();
       
-      // Extract all lesson nodes to send to AI
-      const lessonNodes = graphData.nodes.filter(n => n.type === 'lesson');
+      const lessonsForAi = [];
+      const lessonToModuleMap = {};
+
+      rawCourses.forEach(course => {
+        if (course.modules) {
+          course.modules.forEach(module => {
+            if (module.lessons) {
+              module.lessons.forEach(lesson => {
+                lessonsForAi.push({ id: lesson._id, title: lesson.title });
+                lessonToModuleMap[lesson._id] = `module_${module._id}`;
+              });
+            }
+          });
+        }
+      });
       
-      if (lessonNodes.length < 2) {
+      if (lessonsForAi.length < 2) {
         alert("You need at least 2 lessons in your knowledge base to discover connections!");
         setIsDiscovering(false);
         return;
       }
 
-      const payload = lessonNodes.map(l => ({
-        id: l.id,
-        title: l.name
-      }));
-
-      const response = await discoverConnections(payload, token);
+      const response = await discoverConnections(lessonsForAi, token);
       
       if (response && response.success && response.data) {
         const newConnections = response.data;
         
-        // Add new AI links to the graph
-        const aiLinks = newConnections.map(conn => ({
-          source: conn.sourceId,
-          target: conn.targetId,
-          color: COLORS.aiLink,
-          type: 'ai',
-          desc: conn.reason
-        }));
+        const aiLinks = [];
+        const addedPairs = new Set(); 
+
+        newConnections.forEach((conn, idx) => {
+          const sourceModule = lessonToModuleMap[conn.sourceId];
+          const targetModule = lessonToModuleMap[conn.targetId];
+
+          if (sourceModule && targetModule && sourceModule !== targetModule) {
+            const pairKey = [sourceModule, targetModule].sort().join('-');
+            if (!addedPairs.has(pairKey)) {
+              addedPairs.add(pairKey);
+              
+              const sourceModName = graphData.nodes.find(n => n.id === sourceModule)?.name || 'Module';
+              const targetModName = graphData.nodes.find(n => n.id === targetModule)?.name || 'Module';
+
+              aiLinks.push({
+                source: sourceModule,
+                target: targetModule,
+                color: COLORS.aiLink,
+                type: 'ai',
+                desc: conn.reason,
+                sourceName: sourceModName,
+                targetName: targetModName,
+                id: `aiLink_${idx}`
+              });
+            }
+          }
+        });
 
         setGraphData(prev => ({
           nodes: prev.nodes,
@@ -260,7 +270,7 @@ const KnowledgeGraph = () => {
               <div className="kg-panel-content">
                 <span className="badge ai-link">AI DISCOVERED LINK</span>
                 <h4 style={{ color: 'white', fontSize: '1.1rem', margin: '0 0 1rem 0' }}>
-                  {selectedLink.source.name} ↔ {selectedLink.target.name}
+                  {selectedLink.sourceName || selectedLink.source.name || 'Module'} ↔ {selectedLink.targetName || selectedLink.target.name || 'Module'}
                 </h4>
                 <p style={{ fontStyle: 'italic', color: '#fbbf24' }}>
                   "{selectedLink.desc}"
